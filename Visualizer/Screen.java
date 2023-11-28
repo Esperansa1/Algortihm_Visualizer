@@ -13,6 +13,8 @@ public class Screen extends JFrame {
     public static final int GRID_HEIGHT = 800;
     private final JPanel drawingPanel;
 
+    private boolean isClickHeld;
+
     public Screen() {
         super("Algorithm Visualizer");
 
@@ -30,15 +32,41 @@ public class Screen extends JFrame {
 
         };
 
+        isClickHeld = false;
         drawingPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                isClickHeld = false;
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if(SwingUtilities.isLeftMouseButton(e)) {
+                    isClickHeld = true;
+                    int x = e.getX();
+                    int y = e.getY();
+                    onMouseClick(x, y);
+                }
+            }
+        });
+
+        drawingPanel.addMouseMotionListener(new MouseAdapter() {
+
             @Override
             public void mousePressed(MouseEvent e) {
                 int x = e.getX();
                 int y = e.getY();
-                onMouseClick(x,y);
+                onMouseClick(x, y);
             }
 
-
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (isClickHeld) {
+                    int x = e.getX();
+                    int y = e.getY();
+                    onMouseClick(x, y);
+                }
+            }
         });
 
         int padding = Cell.CELL_SIZE;

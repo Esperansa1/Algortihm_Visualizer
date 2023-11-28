@@ -1,22 +1,37 @@
 package Visualizer.SearchAlgortihms;
 
 import Visualizer.Cell;
+import Visualizer.SearchAlgortihms.AStar.AStarCell;
 
 import java.util.ArrayList;
 
-public abstract class SearchAlgorithm  {
+public abstract class SearchAlgorithm<T>  {
 
-    public ArrayList<Cell> open_set;
-    public ArrayList<Cell> closed_set;
 
-    public boolean isInClosedSet(Cell target){
-        for(Cell cell : closed_set){
+    public boolean isFinished = false;
+
+    protected ArrayList<T> openSet;
+    protected ArrayList<T> closedSet;
+
+    public boolean isInClosedSet(T target){
+        for(T cell : closedSet){
             if(cell.equals(target)) return true;
         }
         return false;
     }
 
-    public abstract void stepSearch(Cell[][] cells);
+    public void initializeSearch(Cell startCell, Cell endCell, Cell[][] cells) {
+
+    }
+
+    public abstract void stepSearch(ArrayList<T> cells);
 
 
+    public ArrayList<T> getOpenSet() {
+        return openSet;
+    }
+
+    public ArrayList<T> getClosedSet() {
+        return closedSet;
+    }
 }

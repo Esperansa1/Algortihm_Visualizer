@@ -12,6 +12,8 @@ public class Cell {
     private int col;
 
     private CellType cellType;
+
+    private Cell cameFrom;
     private ArrayList<Cell> neighbours;
 
 
@@ -22,6 +24,60 @@ public class Cell {
         neighbours = new ArrayList<>();
 
     }
+
+    public void setupNeighbours(Cell[][] cells, boolean allowDiagonals){
+        neighbours = new ArrayList<>();
+
+        int numRows = cells.length;
+        int numCols = cells[0].length;
+
+        // Right
+        if (col + 1 < numCols) {
+            neighbours.add(cells[row][col + 1]);
+        }
+
+        // Left
+        if (col - 1 >= 0) {
+            neighbours.add(cells[row][col - 1]);
+        }
+
+        // Down
+        if (row + 1 < numRows) {
+            neighbours.add(cells[row + 1][col]);
+        }
+
+        // Up
+        if (row - 1 >= 0) {
+            neighbours.add(cells[row - 1][col]);
+        }
+
+        // Diagonals
+        if (allowDiagonals) {
+            // Down-Right
+            if (row + 1 < numRows && col + 1 < numCols) {
+                neighbours.add(cells[row + 1][col + 1]);
+            }
+
+            // Up-Right
+            if (row - 1 >= 0 && col + 1 < numCols) {
+                neighbours.add(cells[row - 1][col + 1]);
+            }
+
+            // Up-Left
+            if (row - 1 >= 0 && col - 1 >= 0) {
+                neighbours.add(cells[row - 1][col - 1]);
+            }
+
+            // Down-Left
+            if (row + 1 < numRows && col - 1 >= 0) {
+                neighbours.add(cells[row + 1][col - 1]);
+            }
+        }
+
+
+
+    }
+
 
     public CellType getCellType() {
         return cellType;
@@ -35,16 +91,16 @@ public class Cell {
         return row;
     }
 
-    public void setRow(int row) {
-        this.row = row;
-    }
-
     public int getCol() {
         return col;
     }
 
-    public void setCol(int col) {
-        this.col = col;
+    public Cell getCameFrom() {
+        return cameFrom;
+    }
+
+    public void setCameFrom(Cell cameFrom) {
+        this.cameFrom = cameFrom;
     }
 
 }
