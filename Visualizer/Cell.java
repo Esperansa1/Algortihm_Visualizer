@@ -73,9 +73,6 @@ public class Cell {
                 neighbours.add(cells[row + 1][col - 1]);
             }
         }
-
-
-
     }
 
 
@@ -103,5 +100,9 @@ public class Cell {
         this.cameFrom = cameFrom;
     }
 
+    @Override
+    public String toString() {
+        return "Row: "+row + " Col:" +col;
+    }
 }
 

@@ -20,6 +20,7 @@ public class BoardManager {
         int cols = Screen.HEIGHT / Cell.CELL_SIZE;
 
         updateCellsArray(rows,cols);
+
     }
 
     public Cell getStartCell() {

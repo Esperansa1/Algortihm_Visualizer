@@ -13,18 +13,31 @@ public abstract class SearchAlgorithm<T>  {
     protected ArrayList<T> openSet;
     protected ArrayList<T> closedSet;
 
-    public boolean isInClosedSet(T target){
-        for(T cell : closedSet){
-            if(cell.equals(target)) return true;
+
+    public void reconstructPath(Cell endCell, Cell startCell ){
+        Cell current = endCell;
+        while(!current.equals(startCell)){
+            current = current.getCameFrom();
+            current.setCellType(Cell.CellType.PATH);
+        }
+        startCell.setCellType(Cell.CellType.START_POINT);
+
+    }
+
+    public boolean isGoal(Cell endCell, Cell startCell, Cell current){
+        if(current.equals(endCell)){
+            reconstructPath(endCell, startCell);
+            return true;
         }
         return false;
     }
+
 
     public void initializeSearch(Cell startCell, Cell endCell, Cell[][] cells) {
 
     }
 
-    public abstract void stepSearch(ArrayList<T> cells);
+    public abstract void stepSearch();
 
 
     public ArrayList<T> getOpenSet() {

@@ -18,25 +18,51 @@ public class AStar extends SearchAlgorithm<AStarCell> {
                 this.cells[i][j] = new AStarCell(cells[i][j]);
             }
         }
+        this.cells[startCell.getCell().getRow()][startCell.getCell().getCol()] = startCell;
+        this.cells[endCell.getCell().getRow()][endCell.getCell().getCol()] = endCell;
+
     }
 
-    private void initCellValues(){
+    private void initializeCellValues(){
         for (int i = 0; i < cells.length; i++) {
             for (int j = 0; j < cells[i].length; j++) {
                 AStarCell cell = cells[i][j];
-                cell.g = cell.euclideanDist(startCell);
+
+                cell.g = Double.MAX_VALUE;
                 cell.h = cell.euclideanDist(endCell);
                 cell.f = cell.g + cell.h;
             }
         }
+        this.startCell.g = 0;
+    }
+
+    public void initializeNeighbours(){
+        for (int i = 0; i < cells.length; i++) {
+            for (int j = 0; j < cells[i].length; j++) {
+                this.cells[i][j].setupNeighbours(cells);
+            }
+        }
+        this.startCell.setupNeighbours(cells);
+        this.endCell.setupNeighbours(cells);
     }
 
     @Override
     public void initializeSearch(Cell startCell, Cell endCell, Cell[][] cells) {
         this.startCell = new AStarCell(startCell);
         this.endCell = new AStarCell(endCell);
-        initializeCellArray(cells);
-        initCellValues();
+
+        this.openSet = new ArrayList<>();
+        this.openSet.add(this.startCell);
+        this.closedSet = new ArrayList<>();
+
+        if(startCell != null && endCell != null){
+            initializeCellArray(cells);
+            initializeCellValues();
+            initializeNeighbours();
+
+            System.out.println("Initialization Successful");
+        }
+
     }
 
     public AStarCell getLowestFScore() {
@@ -56,26 +82,29 @@ public class AStar extends SearchAlgorithm<AStarCell> {
     }
 
     @Override
-    public void stepSearch(ArrayList<AStarCell> cells) {
+    public void stepSearch() {
         if (isFinished) {
             return;
         }
 
         AStarCell currentCell = getLowestFScore();
-//        isGoal(currentCell);
 
         openSet.remove(currentCell);
         closedSet.add(currentCell);
 
+        if(isGoal(endCell.getCell(), startCell.getCell(), currentCell.getCell())) return; // CHANGE IT SO RECONSTRUCT PATH WILL BE CALLED WITHIN THE IF STATEMENT
+
+
         for (AStarCell neighbour : currentCell.getNeighbours()) {
-            if (neighbour.cell.getCellType() == Cell.CellType.WALL || neighbour.isVisited) {
-//                continue;
+            if (neighbour.getCell().getCellType() == Cell.CellType.WALL || closedSet.contains(neighbour))
+                continue;
 
             double tentativeGScore = currentCell.g + neighbour.weight +
-                    heuristicFunction(currentCell, neighbour);
+                    currentCell.euclideanDist(neighbour);
 
+            System.out.println(tentativeGScore + " " + neighbour.g);
             if (tentativeGScore < neighbour.g) {
-                neighbour.parent = currentCell;
+                neighbour.getCell().setCameFrom(currentCell.getCell());
                 neighbour.g = tentativeGScore;
                 neighbour.f = tentativeGScore + neighbour.h;
 
@@ -84,10 +113,6 @@ public class AStar extends SearchAlgorithm<AStarCell> {
                 }
             }
         }
-    }
-
-
-
-
+        System.out.println(openSet);
     }
 }

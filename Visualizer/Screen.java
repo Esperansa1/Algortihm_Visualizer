@@ -1,5 +1,7 @@
 package Visualizer;
 
+import Visualizer.SearchAlgortihms.AStar.AStar;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -14,9 +16,12 @@ public class Screen extends JFrame {
     private final JPanel drawingPanel;
 
     private boolean isClickHeld;
+    AStar aStar;
 
     public Screen() {
         super("Algorithm Visualizer");
+
+        aStar = new AStar();
 
         setLayout(null);
 
@@ -88,9 +93,10 @@ public class Screen extends JFrame {
         setResizable(false);
         setVisible(true);
 
-        button1.addActionListener(e -> System.out.println("Button 1 clicked!"));
 
-        button2.addActionListener(e -> System.out.println("Button 2 clicked!"));
+        button1.addActionListener(e -> aStar.stepSearch());
+
+        button2.addActionListener(e -> aStar.initializeSearch(BoardManager.getInstance().getStartCell(), BoardManager.getInstance().getEndCell(), BoardManager.getInstance().getCells()));
     }
 
 
