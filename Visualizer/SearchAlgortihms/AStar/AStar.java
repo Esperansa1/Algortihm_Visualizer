@@ -2,24 +2,40 @@ package Visualizer.SearchAlgortihms.AStar;
 
 import Visualizer.Cell;
 import Visualizer.SearchAlgortihms.SearchAlgorithm;
-
-import java.util.ArrayList;
-
 public class AStar extends SearchAlgorithm<AStarCell> {
 
     private AStarCell startCell, endCell;
     private AStarCell[][] cells;
 
+    public void initializeNeighbours(){
 
-    private void initializeCellArray(Cell[][] cells){
-        this.cells = new AStarCell[cells.length][cells[0].length];
+        boolean allowDiagonals = false;;
+
         for (int i = 0; i < cells.length; i++) {
             for (int j = 0; j < cells[i].length; j++) {
-                this.cells[i][j] = new AStarCell(cells[i][j]);
+                cells[i][j].setupNeighbours(cells, allowDiagonals);
             }
         }
-        this.cells[startCell.getCell().getRow()][startCell.getCell().getCol()] = startCell;
-        this.cells[endCell.getCell().getRow()][endCell.getCell().getCol()] = endCell;
+
+    }
+
+    private void copyCellData(Cell[][] starting_data, int i, int j){
+        Cell.CellType type = starting_data[i][j].getCellType();
+        this.cells[i][j] = new AStarCell(starting_data[i][j]);
+        starting_data[i][j] = this.cells[i][j];
+        starting_data[i][j].setCellType(type);
+    }
+
+
+    private void initializeCellArray(Cell[][] starting_cells){
+        this.cells = new AStarCell[starting_cells.length][starting_cells[0].length];
+        for (int i = 0; i < starting_cells.length; i++) {
+            for (int j = 0; j < starting_cells[i].length; j++) {
+                copyCellData(starting_cells, i, j);
+            }
+        }
+        this.cells[startCell.getRow()][startCell.getCol()] = startCell;
+        this.cells[endCell.getRow()][endCell.getCol()] = endCell;
 
     }
 
@@ -28,40 +44,27 @@ public class AStar extends SearchAlgorithm<AStarCell> {
             for (int j = 0; j < cells[i].length; j++) {
                 AStarCell cell = cells[i][j];
 
-                cell.g = Double.MAX_VALUE;
+                cell.g = 0;
                 cell.h = cell.euclideanDist(endCell);
                 cell.f = cell.g + cell.h;
             }
         }
-        this.startCell.g = 0;
-    }
-
-    public void initializeNeighbours(){
-        for (int i = 0; i < cells.length; i++) {
-            for (int j = 0; j < cells[i].length; j++) {
-                this.cells[i][j].setupNeighbours(cells);
-            }
-        }
-        this.startCell.setupNeighbours(cells);
-        this.endCell.setupNeighbours(cells);
     }
 
     @Override
-    public void initializeSearch(Cell startCell, Cell endCell, Cell[][] cells) {
+    public void initializeSearch(Cell startCell, Cell endCell, Cell[][] starting_cells) {
+        super.initializeSearch(startCell, endCell, starting_cells);
+
         this.startCell = new AStarCell(startCell);
         this.endCell = new AStarCell(endCell);
 
-        this.openSet = new ArrayList<>();
         this.openSet.add(this.startCell);
-        this.closedSet = new ArrayList<>();
 
-        if(startCell != null && endCell != null){
-            initializeCellArray(cells);
-            initializeCellValues();
-            initializeNeighbours();
+        initializeCellArray(starting_cells);
+        initializeCellValues();
+        initializeNeighbours();
 
-            System.out.println("Initialization Successful");
-        }
+        System.out.println("Initialized");
 
     }
 
@@ -83,7 +86,9 @@ public class AStar extends SearchAlgorithm<AStarCell> {
 
     @Override
     public void stepSearch() {
-        if (isFinished) {
+        if (isFinished || openSet.isEmpty()) {
+            isFinished = true;
+            System.out.println("Finished");
             return;
         }
 
@@ -91,28 +96,33 @@ public class AStar extends SearchAlgorithm<AStarCell> {
 
         openSet.remove(currentCell);
         closedSet.add(currentCell);
+        setupCellTypes(startCell, endCell);
 
-        if(isGoal(endCell.getCell(), startCell.getCell(), currentCell.getCell())) return; // CHANGE IT SO RECONSTRUCT PATH WILL BE CALLED WITHIN THE IF STATEMENT
-
+        if (isGoal(endCell, currentCell)) {
+            reconstructPath(endCell, startCell);
+            isFinished = true;
+            return;
+        }
 
         for (AStarCell neighbour : currentCell.getNeighbours()) {
-            if (neighbour.getCell().getCellType() == Cell.CellType.WALL || closedSet.contains(neighbour))
+            if (neighbour.getCellType() == Cell.CellType.WALL || closedSet.contains(neighbour))
                 continue;
 
-            double tentativeGScore = currentCell.g + neighbour.weight +
-                    currentCell.euclideanDist(neighbour);
+            double tentativeGScore = currentCell.g + currentCell.euclideanDist(neighbour);
 
-            System.out.println(tentativeGScore + " " + neighbour.g);
-            if (tentativeGScore < neighbour.g) {
-                neighbour.getCell().setCameFrom(currentCell.getCell());
-                neighbour.g = tentativeGScore;
-                neighbour.f = tentativeGScore + neighbour.h;
-
-                if (!openSet.contains(neighbour)) {
-                    openSet.add(neighbour);
-                }
+            if (!openSet.contains(neighbour)) {
+                openSet.add(neighbour);
+            }else if(tentativeGScore >= neighbour.g){
+                continue;
             }
+
+            neighbour.setCameFrom(currentCell);
+            neighbour.g = tentativeGScore;
+            neighbour.f = tentativeGScore + neighbour.h;
+
         }
-        System.out.println(openSet);
+        reconstructPath(currentCell, startCell);
+
+
     }
 }

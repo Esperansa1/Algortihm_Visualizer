@@ -4,7 +4,7 @@ import Visualizer.Cell;
 
 import java.util.ArrayList;
 
-public class AStarCell {
+public class AStarCell extends Cell{
 
 
     public double h;
@@ -14,25 +14,18 @@ public class AStarCell {
 
     private ArrayList<AStarCell> neighbours;
 
-    private Cell cell;
-
-
     public AStarCell(Cell cell) {
-        this.cell = cell;
+        super(cell.getRow(), cell.getCol());
+        weight = 1;
+    }
+    public AStarCell(int row, int col) {
+        super(row, col);
         weight = 1;
     }
 
-    public void setCell(Cell cell) {
-        this.cell = cell;
-    }
-
-    public Cell getCell() {
-        return cell;
-    }
-
     public int[] getDistances(AStarCell otherCell) {
-        int dx = Math.abs(this.cell.getCol() - otherCell.cell.getCol());
-        int dy = Math.abs(this.cell.getRow() - otherCell.cell.getRow());
+        int dx = Math.abs(getCol() - otherCell.getCol());
+        int dy = Math.abs(getRow() - otherCell.getRow());
         return new int[]{dx, dy};
     }
 
@@ -63,66 +56,60 @@ public class AStarCell {
         int[] distances = getDistances(otherCell);
         return Math.max(distances[0], distances[1]);
     }
-
     public ArrayList<AStarCell> getNeighbours() {
         return neighbours;
     }
 
-    public void setupNeighbours(AStarCell[][] cells){
+    public void setupNeighbours(AStarCell[][] cells, boolean allowDiagonals){
         neighbours = new ArrayList<>();
 
         int numRows = cells.length;
         int numCols = cells[0].length;
 
-
-        int row = cell.getRow();
-        int col = cell.getCol();
-
+        int col = getCol();
+        int row = getRow();
+        // Right
         if (col + 1 < numCols) {
             neighbours.add(cells[row][col + 1]);
         }
 
+        // Left
         if (col - 1 >= 0) {
             neighbours.add(cells[row][col - 1]);
         }
 
+        // Down
         if (row + 1 < numRows) {
             neighbours.add(cells[row + 1][col]);
         }
 
+        // Up
         if (row - 1 >= 0) {
             neighbours.add(cells[row - 1][col]);
         }
-        System.out.println(neighbours);
 
-//        // Diagonals
-//        if (allowDiagonals) {
-//            // Down-Right
-//            if (row + 1 < numRows && col + 1 < numCols) {
-//                neighbours.add(cells[row + 1][col + 1]);
-//            }
-//
-//            // Up-Right
-//            if (row - 1 >= 0 && col + 1 < numCols) {
-//                neighbours.add(cells[row - 1][col + 1]);
-//            }
-//
-//            // Up-Left
-//            if (row - 1 >= 0 && col - 1 >= 0) {
-//                neighbours.add(cells[row - 1][col - 1]);
-//            }
-//
-//            // Down-Left
-//            if (row + 1 < numRows && col - 1 >= 0) {
-//                neighbours.add(cells[row + 1][col - 1]);
-//            }
+        // Diagonals
+        if (allowDiagonals) {
+            // Down-Right
+            if (row + 1 < numRows && col + 1 < numCols) {
+                neighbours.add(cells[row + 1][col + 1]);
+            }
 
+            // Up-Right
+            if (row - 1 >= 0 && col + 1 < numCols) {
+                neighbours.add(cells[row - 1][col + 1]);
+            }
+
+            // Up-Left
+            if (row - 1 >= 0 && col - 1 >= 0) {
+                neighbours.add(cells[row - 1][col - 1]);
+            }
+
+            // Down-Left
+            if (row + 1 < numRows && col - 1 >= 0) {
+                neighbours.add(cells[row + 1][col - 1]);
+            }
+        }
     }
 
-    @Override
-    public String toString() {
-        return "AStarCell{" +
-                "cell=" + cell +
-                '}';
-    }
 }

@@ -1,9 +1,12 @@
 package Visualizer;
 
+import Visualizer.Managers.BoardManager;
 import Visualizer.SearchAlgortihms.AStar.AStar;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -94,9 +97,22 @@ public class Screen extends JFrame {
         setVisible(true);
 
 
-        button1.addActionListener(e -> aStar.stepSearch());
+        button1.addActionListener(e -> {
+                new Thread(() -> {
+                    while (!aStar.isFinished) {
+                        try{
+                            aStar.stepSearch();
+                            Thread.sleep(30);
+                        }
+                        catch (InterruptedException exception) {
+                            break;
+                        }
+                    }
+                }).start();
 
-        button2.addActionListener(e -> aStar.initializeSearch(BoardManager.getInstance().getStartCell(), BoardManager.getInstance().getEndCell(), BoardManager.getInstance().getCells()));
+        });
+
+        button2.addActionListener(e -> System.out.println());
     }
 
 
@@ -107,6 +123,24 @@ public class Screen extends JFrame {
         int buttonAlignment = GRID_WIDTH + (WIDTH - GRID_WIDTH - buttonWidth + padding)/2;
         button.setBounds(buttonAlignment, y, buttonWidth, 40);
         return button;
+    }
+
+
+    private JToggleButton toggleButton(){
+        JToggleButton toggleButton = new JToggleButton("Toggle Switch");
+        toggleButton.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    // Switch is ON
+                    System.out.println("Switch is ON");
+                } else {
+                    // Switch is OFF
+                    System.out.println("Switch is OFF");
+                }
+            }
+        });
+        return toggleButton;
     }
 
     private JSlider getSlider(int padding) {
@@ -186,9 +220,18 @@ public class Screen extends JFrame {
 
         BoardManager.getInstance().onCellSelected(row,col);
 
+        initializeBoard();
+
         drawingPanel.repaint();
 
     }
+
+    private void initializeBoard(){
+        if(BoardManager.getInstance().getStartCell() != null && BoardManager.getInstance().getEndCell() != null){
+            aStar.initializeSearch(BoardManager.getInstance().getStartCell(), BoardManager.getInstance().getEndCell(), BoardManager.getInstance().getCells());
+        }
+    }
+
 }
 
 class CellColors {
@@ -197,7 +240,7 @@ class CellColors {
 
         return switch (cell.getCellType()) {
             case EMPTY -> Color.WHITE;
-            case WALL -> Color.BLACK;
+            case WALL -> Color.GRAY;
             case PATH -> Color.MAGENTA;
             case OPEN_SET -> Color.GREEN;
             case CLOSE_SET -> Color.RED;

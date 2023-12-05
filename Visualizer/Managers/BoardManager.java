@@ -1,4 +1,7 @@
-package Visualizer;
+package Visualizer.Managers;
+
+import Visualizer.Cell;
+import Visualizer.Screen;
 
 public class BoardManager {
 
@@ -16,8 +19,8 @@ public class BoardManager {
 
     public BoardManager() {
 
-        int rows = Screen.WIDTH / Cell.CELL_SIZE;
-        int cols = Screen.HEIGHT / Cell.CELL_SIZE;
+        int rows = Screen.GRID_WIDTH / Cell.CELL_SIZE;
+        int cols = Screen.GRID_HEIGHT / Cell.CELL_SIZE;
 
         updateCellsArray(rows,cols);
 
@@ -42,6 +45,10 @@ public class BoardManager {
     public Cell[][] getCells() {
         return cells;
     }
+
+//    public void setCells(Cell[][] cells) {
+//        this.cells = cells;
+//    }
 
     public void updateCellsArray(int rows, int cols){ // Maybe instead of making new array, change it so it will only delete the sides
         this.cells = new Cell[rows][cols];
@@ -72,7 +79,10 @@ public class BoardManager {
         }
         else{
             this.cells[row][col].setCellType(Cell.CellType.WALL);
+
         }
+
+
         // Later add Weights
 
     }
