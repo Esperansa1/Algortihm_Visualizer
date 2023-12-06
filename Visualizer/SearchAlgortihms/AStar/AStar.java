@@ -2,6 +2,9 @@ package Visualizer.SearchAlgortihms.AStar;
 
 import Visualizer.Cell;
 import Visualizer.SearchAlgortihms.SearchAlgorithm;
+
+import java.util.Arrays;
+
 public class AStar extends SearchAlgorithm<AStarCell> {
 
     private AStarCell startCell, endCell;
@@ -20,22 +23,32 @@ public class AStar extends SearchAlgorithm<AStarCell> {
     }
 
     private void copyCellData(Cell[][] starting_data, int i, int j){
-        Cell.CellType type = starting_data[i][j].getCellType();
+//        Cell.CellType type = starting_data[i][j].getCellType();
         this.cells[i][j] = new AStarCell(starting_data[i][j]);
         starting_data[i][j] = this.cells[i][j];
-        starting_data[i][j].setCellType(type);
+//        starting_data[i][j].setCellType(type);
+
     }
 
 
-    private void initializeCellArray(Cell[][] starting_cells){
+    private void initializeCellArray(Cell[][] starting_cells, Cell startCell, Cell endCell){
         this.cells = new AStarCell[starting_cells.length][starting_cells[0].length];
+
+        starting_cells[startCell.getRow()][startCell.getCol()] = startCell;
+        starting_cells[endCell.getRow()][endCell.getCol()] = endCell;
+
         for (int i = 0; i < starting_cells.length; i++) {
             for (int j = 0; j < starting_cells[i].length; j++) {
                 copyCellData(starting_cells, i, j);
             }
         }
-        this.cells[startCell.getRow()][startCell.getCol()] = startCell;
-        this.cells[endCell.getRow()][endCell.getCol()] = endCell;
+
+
+
+        this.startCell = this.cells[startCell.getRow()][startCell.getCol()];
+        this.endCell = this.cells[endCell.getRow()][endCell.getCol()];
+
+        this.openSet.add(this.startCell);
 
     }
 
@@ -52,15 +65,13 @@ public class AStar extends SearchAlgorithm<AStarCell> {
     }
 
     @Override
-    public void initializeSearch(Cell startCell, Cell endCell, Cell[][] starting_cells) {
-        super.initializeSearch(startCell, endCell, starting_cells);
+    public void initializeSearch(Cell[][] starting_cells, Cell startCell, Cell endCell) {
+        super.initializeSearch(starting_cells, startCell, endCell);
 
-        this.startCell = new AStarCell(startCell);
-        this.endCell = new AStarCell(endCell);
+        System.out.println(Arrays.toString(startCell.getWalls()));
+        System.out.println(Arrays.toString(starting_cells[startCell.getRow()][startCell.getCol()].getWalls()));
 
-        this.openSet.add(this.startCell);
-
-        initializeCellArray(starting_cells);
+        initializeCellArray(starting_cells, startCell, endCell);
         initializeCellValues();
         initializeNeighbours();
 
@@ -76,6 +87,7 @@ public class AStar extends SearchAlgorithm<AStarCell> {
         AStarCell bestCell = openSet.get(0);
 
         for (AStarCell cell : openSet) {
+            System.out.println(cell);
             if (cell.f < bestCell.f) {
                 bestCell = cell;
             }
@@ -105,7 +117,7 @@ public class AStar extends SearchAlgorithm<AStarCell> {
         }
 
         for (AStarCell neighbour : currentCell.getNeighbours()) {
-            if (neighbour.getCellType() == Cell.CellType.WALL || closedSet.contains(neighbour))
+            if (neighbour.getCellType() == Cell.CellType.WALL || closedSet.contains(neighbour) || !isPossibleToMove(currentCell, neighbour))
                 continue;
 
             double tentativeGScore = currentCell.g + currentCell.euclideanDist(neighbour);

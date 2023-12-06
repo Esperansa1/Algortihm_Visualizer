@@ -68,20 +68,16 @@ public class BoardManager {
         if(cells[row][col].getCellType() == Cell.CellType.START_POINT || cells[row][col].getCellType() == Cell.CellType.END_POINT) return;
 
         if(startCell == null) {
-            startCell = new Cell(row,col);
-            this.cells[row][col] = startCell;
+            startCell = this.cells[row][col];
             startCell.setCellType(Cell.CellType.START_POINT);
         }
         else if(endCell == null){
-            endCell = new Cell(row,col);
-            this.cells[row][col] = endCell;
+            endCell = this.cells[row][col];
             endCell.setCellType(Cell.CellType.END_POINT);
         }
         else{
             this.cells[row][col].setCellType(Cell.CellType.WALL);
-
         }
-
 
         // Later add Weights
 

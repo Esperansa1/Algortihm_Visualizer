@@ -15,7 +15,7 @@ public class AStarCell extends Cell{
     private ArrayList<AStarCell> neighbours;
 
     public AStarCell(Cell cell) {
-        super(cell.getRow(), cell.getCol());
+        super(cell.getRow(), cell.getCol(), cell.getCellType(), cell.getWalls());
         weight = 1;
     }
     public AStarCell(int row, int col) {
@@ -60,7 +60,9 @@ public class AStarCell extends Cell{
         return neighbours;
     }
 
+
     public void setupNeighbours(AStarCell[][] cells, boolean allowDiagonals){
+        super.setupNeighbours(cells, allowDiagonals);
         neighbours = new ArrayList<>();
 
         int numRows = cells.length;

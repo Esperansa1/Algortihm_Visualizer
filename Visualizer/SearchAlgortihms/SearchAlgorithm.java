@@ -27,7 +27,7 @@ public abstract class SearchAlgorithm<T extends Cell>  {
         return current.equals(endCell);
     }
 
-    public void initializeSearch(Cell startCell, Cell endCell, Cell[][] cells) {
+    public void initializeSearch(Cell[][] cells, Cell startCell, Cell endCell) {
         if(startCell == null || endCell == null) return;
 
         for (int i = 0; i < cells.length; i++) {
@@ -58,18 +58,33 @@ public abstract class SearchAlgorithm<T extends Cell>  {
 
     }
 
-//    public void initializeNeighbours(Cell[][] cells, Cell startCell, Cell endCell ){
-//
-//        boolean allowDiagonals = false;;
-//
-//        for (int i = 0; i < cells.length; i++) {
-//            for (int j = 0; j < cells[i].length; j++) {
-//                cells[i][j].setupNeighbours(cells, allowDiagonals);
-//            }
-//        }
-//        startCell.setupNeighbours(cells, allowDiagonals);
-//        endCell.setupNeighbours(cells, allowDiagonals);
-//    }
+    protected boolean isPossibleToMove(Cell current, Cell wanted){
+        int rowDifference = current.getRow() - wanted.getRow();
+        int colDifference = current.getCol() - wanted.getCol();
+
+        boolean[] walls = current.getWalls();
+
+        if (rowDifference == 1 && walls[0]) {
+            return false;  // Wall above
+        } else if (colDifference == -1 && walls[1]) {
+            return false;  // Wall to the right
+        } else if (rowDifference == -1 && walls[2]) {
+            return false;  // Wall below
+        } else if (colDifference == 1 && walls[3]) {
+            return false;  // Wall to the left
+        }
+
+        return true;
+
+        }
+
+        public void initializeNeighbours(Cell[][] cells, boolean allowDiagonals){
+        for (int i = 0; i < cells.length; i++) {
+            for (int j = 0; j < cells[i].length; j++) {
+                cells[i][j].setupNeighbours(cells, allowDiagonals);
+            }
+        }
+    }
 
     public abstract void stepSearch();
 }

@@ -1,12 +1,12 @@
 package Visualizer;
 
 import Visualizer.Managers.BoardManager;
+import Visualizer.MazeAlgorithms.SAW;
 import Visualizer.SearchAlgortihms.AStar.AStar;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -20,11 +20,13 @@ public class Screen extends JFrame {
 
     private boolean isClickHeld;
     AStar aStar;
+    SAW saw;
 
     public Screen() {
         super("Algorithm Visualizer");
 
         aStar = new AStar();
+        saw = new SAW();
 
         setLayout(null);
 
@@ -34,8 +36,9 @@ public class Screen extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                drawCells(g, boardManager.getCells());
-                drawGrid(g);
+                Cell[][] cells = boardManager.getCells();
+                drawCells(g, cells);
+                drawWalls(g, cells);
             }
 
         };
@@ -96,9 +99,9 @@ public class Screen extends JFrame {
         setResizable(false);
         setVisible(true);
 
-
         button1.addActionListener(e -> {
                 new Thread(() -> {
+
                     while (!aStar.isFinished) {
                         try{
                             aStar.stepSearch();
@@ -112,7 +115,20 @@ public class Screen extends JFrame {
 
         });
 
-        button2.addActionListener(e -> System.out.println());
+        button2.addActionListener(e ->
+            new Thread(() -> {
+                Cell[][] cells = BoardManager.getInstance().getCells();
+                try{
+                        while(!saw.isFinished){
+                            saw.stepMazeGeneration(cells);
+                            Thread.sleep(1);
+                        }
+
+                    }
+                    catch (InterruptedException exception) {
+
+                    }
+            }).start());
     }
 
 
@@ -128,16 +144,13 @@ public class Screen extends JFrame {
 
     private JToggleButton toggleButton(){
         JToggleButton toggleButton = new JToggleButton("Toggle Switch");
-        toggleButton.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    // Switch is ON
-                    System.out.println("Switch is ON");
-                } else {
-                    // Switch is OFF
-                    System.out.println("Switch is OFF");
-                }
+        toggleButton.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                // Switch is ON
+                System.out.println("Switch is ON");
+            } else {
+                // Switch is OFF
+                System.out.println("Switch is OFF");
             }
         });
         return toggleButton;
@@ -176,22 +189,29 @@ public class Screen extends JFrame {
         return slider;
     }
 
-    public void drawGrid(Graphics g) {
+    public void drawWalls(Graphics g, Cell[][] cells) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.BLACK);
 
-        int rows = GRID_HEIGHT / Cell.CELL_SIZE;
-        int cols = GRID_WIDTH / Cell.CELL_SIZE;
-
-        for (int i = 0; i < rows+1; i++) {
-            g2d.drawLine(0, i * Cell.CELL_SIZE, GRID_WIDTH, i * Cell.CELL_SIZE);
+        for (int i = 0; i < cells.length; i++) {
+            for (int j = 0; j < cells[i].length ; j++) {
+                boolean[] walls = cells[i][j].getWalls();
+                for (int k = 0; k < walls.length; k++) {
+                    if(walls[k]){
+                        switch (k) {
+                            case 0 ->
+                                    g2d.drawLine(j * Cell.CELL_SIZE, i * Cell.CELL_SIZE, j * Cell.CELL_SIZE + Cell.CELL_SIZE, i * Cell.CELL_SIZE);
+                            case 1 ->
+                                    g2d.drawLine(j * Cell.CELL_SIZE + Cell.CELL_SIZE, i * Cell.CELL_SIZE, j * Cell.CELL_SIZE + Cell.CELL_SIZE, i * Cell.CELL_SIZE + Cell.CELL_SIZE);
+                            case 2 ->
+                                    g2d.drawLine(j * Cell.CELL_SIZE, i * Cell.CELL_SIZE + Cell.CELL_SIZE, j * Cell.CELL_SIZE + Cell.CELL_SIZE, i * Cell.CELL_SIZE + Cell.CELL_SIZE);
+                            case 3 ->
+                                    g2d.drawLine(j * Cell.CELL_SIZE, i * Cell.CELL_SIZE, j * Cell.CELL_SIZE, i * Cell.CELL_SIZE + Cell.CELL_SIZE);
+                        }
+                    }
+                }
+            }
         }
-
-        for(int i = 0; i < cols + 1; i++){
-            g2d.drawLine(i * Cell.CELL_SIZE, 0, i * Cell.CELL_SIZE, GRID_HEIGHT);
-
-        }
-
     }
 
     public void drawCells(Graphics g, Cell[][] cells){
@@ -206,6 +226,7 @@ public class Screen extends JFrame {
                 g2d.fillRect(j * Cell.CELL_SIZE, i * Cell.CELL_SIZE, Cell.CELL_SIZE, Cell.CELL_SIZE);
             }
         }
+
         drawingPanel.repaint();
     }
 
@@ -228,7 +249,7 @@ public class Screen extends JFrame {
 
     private void initializeBoard(){
         if(BoardManager.getInstance().getStartCell() != null && BoardManager.getInstance().getEndCell() != null){
-            aStar.initializeSearch(BoardManager.getInstance().getStartCell(), BoardManager.getInstance().getEndCell(), BoardManager.getInstance().getCells());
+            aStar.initializeSearch(BoardManager.getInstance().getCells(), BoardManager.getInstance().getStartCell(), BoardManager.getInstance().getEndCell());
         }
     }
 
@@ -245,6 +266,7 @@ class CellColors {
             case OPEN_SET -> Color.GREEN;
             case CLOSE_SET -> Color.RED;
             case END_POINT, START_POINT -> Color.YELLOW;
+            case HIGHLIGHT -> Color.PINK;
         };
     }
 }

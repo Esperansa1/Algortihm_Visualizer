@@ -2,7 +2,8 @@ TODO:
     -- Add a switch for diagonals
     -- Make walls a part of the cell and draw them so
     -- Add Maze Generation
-    -- Add BFS, DFS
+    -- Add BFS, DFS,
     -- Add cool animations search
     -- Replace path colors with actual path
     -- Replace start point and end point from yellow to a circle
+    -- Add possible different hueristic for algorithms that use such
