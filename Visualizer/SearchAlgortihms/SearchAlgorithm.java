@@ -1,16 +1,14 @@
 package Visualizer.SearchAlgortihms;
 
 import Visualizer.Cell;
-import Visualizer.SearchAlgortihms.AStar.AStarCell;
-
 import java.util.ArrayList;
 
-public abstract class SearchAlgorithm<T extends Cell>  {
-
+public abstract class SearchAlgorithm  {
     public boolean isFinished = false;
+    protected ArrayList<Cell> openSet;
+    protected ArrayList<Cell> closedSet;
 
-    protected ArrayList<T> openSet;
-    protected ArrayList<T> closedSet;
+    protected Cell startCell, endCell;
 
 
     public void reconstructPath(Cell endCell, Cell startCell){
@@ -30,26 +28,30 @@ public abstract class SearchAlgorithm<T extends Cell>  {
     public void initializeSearch(Cell[][] cells, Cell startCell, Cell endCell) {
         if(startCell == null || endCell == null) return;
 
-        for (int i = 0; i < cells.length; i++) {
-            for (int j = 0; j < cells[i].length; j++) {
-                Cell cell = cells[i][j];
-                if(cell.getCellType() == Cell.CellType.PATH || cell.getCellType() == Cell.CellType.CLOSE_SET || cell.getCellType() == Cell.CellType.OPEN_SET){
+        for (Cell[] value : cells) {
+            for (Cell cell : value) {
+                if (cell.getCellType() == Cell.CellType.PATH || cell.getCellType() == Cell.CellType.CLOSE_SET || cell.getCellType() == Cell.CellType.OPEN_SET) {
                     cell.setCellType(Cell.CellType.EMPTY);
                 }
             }
         }
 
+        initializeNeighbours(cells, false);
         this.openSet = new ArrayList<>();
         this.closedSet = new ArrayList<>();
+
+        this.startCell = startCell;
+        this.endCell = endCell;
+
         isFinished = false;
 
     }
     public void setupCellTypes(Cell startCell, Cell endCell) {
 
-        for(T cell : openSet){
+        for(Cell cell : openSet){
             cell.setCellType(Cell.CellType.OPEN_SET);
         }
-        for(T cell : closedSet){
+        for(Cell cell : closedSet){
             cell.setCellType(Cell.CellType.CLOSE_SET);
         }
         startCell.setCellType(Cell.CellType.START_POINT);
@@ -78,10 +80,11 @@ public abstract class SearchAlgorithm<T extends Cell>  {
 
         }
 
-        public void initializeNeighbours(Cell[][] cells, boolean allowDiagonals){
-        for (int i = 0; i < cells.length; i++) {
-            for (int j = 0; j < cells[i].length; j++) {
-                cells[i][j].setupNeighbours(cells, allowDiagonals);
+
+    public void initializeNeighbours(Cell[][] cells, boolean allowDiagonals){
+        for(Cell[] cellArray : cells) {
+            for(Cell cell : cellArray) {
+                cell.setupNeighbours(cells, allowDiagonals);
             }
         }
     }

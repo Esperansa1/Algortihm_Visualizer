@@ -1,19 +1,18 @@
 package Visualizer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
 
 
 public class Cell {
     public enum CellType {EMPTY, WALL, PATH, OPEN_SET, CLOSE_SET, START_POINT, END_POINT, HIGHLIGHT}
                             // TOP  RIGHT BOTTOM LEFT
-    private boolean[] walls = {true, true, true, true};
+//    private boolean[] walls = {true, true, true, true};
+    private boolean[] walls = {false, false, false, false};
 
     public static int CELL_SIZE = 40;
 
-    private int row;
-    private int col;
+    private final int row;
+    private final int col;
 
     private CellType cellType;
     private Cell cameFrom;
@@ -63,7 +62,15 @@ public class Cell {
         }
     }
 
-
+    private int[] getDistances(Cell otherCell) {
+        int dx = Math.abs(getCol() - otherCell.getCol());
+        int dy = Math.abs(getRow() - otherCell.getRow());
+        return new int[]{dx, dy};
+    }
+    public double euclideanDist(Cell otherCell) {
+        int[] distances = getDistances(otherCell);
+        return Math.sqrt(distances[0] * distances[0] + distances[1] * distances[1]);
+    }
 
     public void setupNeighbours(Cell[][] cells, boolean allowDiagonals){
         neighbours = new ArrayList<>();
@@ -114,6 +121,10 @@ public class Cell {
             }
         }
     }
+    public ArrayList<Cell> getNeighbours() {
+        return neighbours;
+    }
+
 
 
 
@@ -148,6 +159,7 @@ public class Cell {
     public String toString() {
         return "Row: "+row + " Col:" +col;
     }
+
     
 }
 

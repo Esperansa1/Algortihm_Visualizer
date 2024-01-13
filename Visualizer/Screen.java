@@ -1,8 +1,7 @@
 package Visualizer;
 
 import Visualizer.Managers.BoardManager;
-import Visualizer.MazeAlgorithms.SAW;
-import Visualizer.SearchAlgortihms.AStar.AStar;
+import Visualizer.Managers.SearchManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,16 +18,14 @@ public class Screen extends JFrame {
     private final JPanel drawingPanel;
 
     private boolean isClickHeld;
-    AStar aStar;
-    SAW saw;
+    private SearchManager searchManager;
 
     public Screen() {
         super("Algorithm Visualizer");
 
-        aStar = new AStar();
-        saw = new SAW();
-
         setLayout(null);
+
+        searchManager = new SearchManager();
 
         BoardManager boardManager = BoardManager.getInstance();
 
@@ -102,9 +99,9 @@ public class Screen extends JFrame {
         button1.addActionListener(e -> {
                 new Thread(() -> {
 
-                    while (!aStar.isFinished) {
+                    while (!searchManager.isFinished()) {
                         try{
-                            aStar.stepSearch();
+                            searchManager.stepSearch();
                             Thread.sleep(30);
                         }
                         catch (InterruptedException exception) {
@@ -118,16 +115,17 @@ public class Screen extends JFrame {
         button2.addActionListener(e ->
             new Thread(() -> {
                 Cell[][] cells = BoardManager.getInstance().getCells();
-                try{
-                        while(!saw.isFinished){
-                            saw.stepMazeGeneration(cells);
-                            Thread.sleep(1);
-                        }
-
-                    }
-                    catch (InterruptedException exception) {
-
-                    }
+//                try{
+//                        while(!saw.isFinished){
+//                            saw.stepMazeGeneration(cells);
+//                            Thread.sleep(1);
+//                        }
+//
+//                    }
+//                    catch (InterruptedException exception) {
+//
+//                    }
+                System.out.println("BTN2");
             }).start());
     }
 
@@ -249,7 +247,7 @@ public class Screen extends JFrame {
 
     private void initializeBoard(){
         if(BoardManager.getInstance().getStartCell() != null && BoardManager.getInstance().getEndCell() != null){
-            aStar.initializeSearch(BoardManager.getInstance().getCells(), BoardManager.getInstance().getStartCell(), BoardManager.getInstance().getEndCell());
+            searchManager.initializeSearch(BoardManager.getInstance().getCells(), BoardManager.getInstance().getStartCell(), BoardManager.getInstance().getEndCell());
         }
     }
 

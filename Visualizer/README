@@ -7,3 +7,4 @@ TODO:
     -- Replace path colors with actual path
     -- Replace start point and end point from yellow to a circle
     -- Add possible different hueristic for algorithms that use such
+    -- Remove continue/break from algorithms because misrad ahinoh very dumb

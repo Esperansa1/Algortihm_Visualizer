@@ -1,5 +1,6 @@
 package Visualizer.Managers;
 
+import Visualizer.Cell;
 import Visualizer.SearchAlgortihms.AStar.AStar;
 import Visualizer.SearchAlgortihms.SearchAlgorithm;
 
@@ -12,8 +13,22 @@ public class SearchManager {
     public SearchManager() {
         searchAlgorithm = new ArrayList<>();
 
-//        AStar aStar = new AStar();
-//        searchAlgorithm.add(aStar);
+        AStar aStar = new AStar();
+        searchAlgorithm.add(aStar);
+    }
+
+    public boolean isFinished(){
+        return getCurrentAlgorithm().isFinished;
+    }
+    private SearchAlgorithm getCurrentAlgorithm(){
+        return searchAlgorithm.get(currentAlgorithmIndex);
+    }
+
+    public void stepSearch(){
+        getCurrentAlgorithm().stepSearch();
+    }
+    public void initializeSearch(Cell[][] cells, Cell startCell, Cell endCell){
+        getCurrentAlgorithm().initializeSearch(cells, startCell, endCell);
     }
 
     public void nextAlgorithm(){

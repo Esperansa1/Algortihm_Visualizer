@@ -3,92 +3,39 @@ package Visualizer.SearchAlgortihms.AStar;
 import Visualizer.Cell;
 import Visualizer.SearchAlgortihms.SearchAlgorithm;
 
-import java.util.Arrays;
+import java.util.*;
 
-public class AStar extends SearchAlgorithm<AStarCell> {
+public class AStar extends SearchAlgorithm {
 
-    private AStarCell startCell, endCell;
-    private AStarCell[][] cells;
+    private Map<Cell, AStarCell> cellMap;
 
-    public void initializeNeighbours(){
 
-        boolean allowDiagonals = false;;
-
-        for (int i = 0; i < cells.length; i++) {
-            for (int j = 0; j < cells[i].length; j++) {
-                cells[i][j].setupNeighbours(cells, allowDiagonals);
+    private void initializeCells(Cell[][] starting_cells, Cell startCell, Cell endCell){
+        for(Cell[] cellArray : starting_cells){
+            for(Cell cell : cellArray){
+                double distance = cell.euclideanDist(endCell);
+                cellMap.put(cell, new AStarCell(distance, distance, 0));
             }
         }
-
-    }
-
-    private void copyCellData(Cell[][] starting_data, int i, int j){
-//        Cell.CellType type = starting_data[i][j].getCellType();
-        this.cells[i][j] = new AStarCell(starting_data[i][j]);
-        starting_data[i][j] = this.cells[i][j];
-//        starting_data[i][j].setCellType(type);
-
-    }
-
-
-    private void initializeCellArray(Cell[][] starting_cells, Cell startCell, Cell endCell){
-        this.cells = new AStarCell[starting_cells.length][starting_cells[0].length];
-
-        starting_cells[startCell.getRow()][startCell.getCol()] = startCell;
-        starting_cells[endCell.getRow()][endCell.getCol()] = endCell;
-
-        for (int i = 0; i < starting_cells.length; i++) {
-            for (int j = 0; j < starting_cells[i].length; j++) {
-                copyCellData(starting_cells, i, j);
-            }
-        }
-
-
-
-        this.startCell = this.cells[startCell.getRow()][startCell.getCol()];
-        this.endCell = this.cells[endCell.getRow()][endCell.getCol()];
-
-        this.openSet.add(this.startCell);
-
-    }
-
-    private void initializeCellValues(){
-        for (int i = 0; i < cells.length; i++) {
-            for (int j = 0; j < cells[i].length; j++) {
-                AStarCell cell = cells[i][j];
-
-                cell.g = 0;
-                cell.h = cell.euclideanDist(endCell);
-                cell.f = cell.g + cell.h;
-            }
-        }
+        cellMap.get(startCell).g = 0;
+        openSet.add(startCell);
     }
 
     @Override
-    public void initializeSearch(Cell[][] starting_cells, Cell startCell, Cell endCell) {
-        super.initializeSearch(starting_cells, startCell, endCell);
-
-        System.out.println(Arrays.toString(startCell.getWalls()));
-        System.out.println(Arrays.toString(starting_cells[startCell.getRow()][startCell.getCol()].getWalls()));
-
-        initializeCellArray(starting_cells, startCell, endCell);
-        initializeCellValues();
-        initializeNeighbours();
-
-        System.out.println("Initialized");
-
+    public void initializeSearch(Cell[][] cells, Cell startCell, Cell endCell) {
+        super.initializeSearch(cells, startCell, endCell);
+        cellMap = new HashMap<>();
+        initializeCells(cells, startCell, endCell);
     }
 
-    public AStarCell getLowestFScore() {
+    public Cell getLowestFScore() {
         if (openSet.isEmpty()) {
             return null;
         }
 
-        AStarCell bestCell = openSet.get(0);
-
-        for (AStarCell cell : openSet) {
-            System.out.println(cell);
-            if (cell.f < bestCell.f) {
+        Cell bestCell = openSet.get(0);
+        for (Cell cell : openSet) {
+            if (cellMap.get(cell).f < cellMap.get(bestCell).f) {
                 bestCell = cell;
             }
         }
@@ -100,11 +47,10 @@ public class AStar extends SearchAlgorithm<AStarCell> {
     public void stepSearch() {
         if (isFinished || openSet.isEmpty()) {
             isFinished = true;
-            System.out.println("Finished");
             return;
         }
 
-        AStarCell currentCell = getLowestFScore();
+        Cell currentCell = getLowestFScore();
 
         openSet.remove(currentCell);
         closedSet.add(currentCell);
@@ -116,21 +62,21 @@ public class AStar extends SearchAlgorithm<AStarCell> {
             return;
         }
 
-        for (AStarCell neighbour : currentCell.getNeighbours()) {
+        for (Cell neighbour : currentCell.getNeighbours()) {
             if (neighbour.getCellType() == Cell.CellType.WALL || closedSet.contains(neighbour) || !isPossibleToMove(currentCell, neighbour))
                 continue;
 
-            double tentativeGScore = currentCell.g + currentCell.euclideanDist(neighbour);
+            double tentativeGScore = cellMap.get(currentCell).g + currentCell.euclideanDist(neighbour);
 
             if (!openSet.contains(neighbour)) {
                 openSet.add(neighbour);
-            }else if(tentativeGScore >= neighbour.g){
+            }else if(tentativeGScore >= cellMap.get(neighbour).g){
                 continue;
             }
 
             neighbour.setCameFrom(currentCell);
-            neighbour.g = tentativeGScore;
-            neighbour.f = tentativeGScore + neighbour.h;
+            cellMap.get(neighbour).g = tentativeGScore;
+            cellMap.get(neighbour).f = tentativeGScore +  cellMap.get(neighbour).h;
 
         }
         reconstructPath(currentCell, startCell);
