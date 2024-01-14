@@ -1,10 +1,15 @@
 TODO:
     -- Add a switch for diagonals
-    -- Make walls a part of the cell and draw them so
-    -- Add Maze Generation
-    -- Add BFS, DFS,
+    -- Add Pledge's Algorithm, Tremaux's Algorithm (SEARCH ALGORITHM)
     -- Add cool animations search
     -- Replace path colors with actual path
     -- Replace start point and end point from yellow to a circle
-    -- Add possible different hueristic for algorithms that use such
     -- Remove continue/break from algorithms because misrad ahinoh very dumb
+
+FINISHED:
+    -- GreedyBFS, A*
+    -- SAW, Iterative randomized Prim's Algorithm
+
+POSTPONED:
+    -- Add possible different hueristic for algorithms that use such
+

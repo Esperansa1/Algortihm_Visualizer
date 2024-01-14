@@ -7,11 +7,10 @@ public abstract class SearchAlgorithm  {
     public boolean isFinished = false;
     protected ArrayList<Cell> openSet;
     protected ArrayList<Cell> closedSet;
-
     protected Cell startCell, endCell;
 
 
-    public void reconstructPath(Cell endCell, Cell startCell){
+    public void reconstructPath(){
         Cell current = endCell;
         while(!current.equals(startCell)){
             current = current.getCameFrom();
@@ -40,13 +39,15 @@ public abstract class SearchAlgorithm  {
         this.openSet = new ArrayList<>();
         this.closedSet = new ArrayList<>();
 
+        this.openSet.add(startCell);
+
         this.startCell = startCell;
         this.endCell = endCell;
 
         isFinished = false;
 
     }
-    public void setupCellTypes(Cell startCell, Cell endCell) {
+    public void setupCellTypes() {
 
         for(Cell cell : openSet){
             cell.setCellType(Cell.CellType.OPEN_SET);

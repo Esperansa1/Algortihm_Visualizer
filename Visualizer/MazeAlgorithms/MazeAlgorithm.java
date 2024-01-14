@@ -2,9 +2,10 @@ package Visualizer.MazeAlgorithms;
 
 import Visualizer.Cell;
 
-public interface MazeAlgorithm {
+public abstract class MazeAlgorithm {
 
-    void stepMazeGeneration(Cell[][] cells);
+    public abstract boolean isFinished();
+    public abstract void stepMazeGeneration(Cell[][] cells);
 
 
 

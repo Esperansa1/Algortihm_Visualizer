@@ -1,6 +1,7 @@
 package Visualizer;
 
 import Visualizer.Managers.BoardManager;
+import Visualizer.Managers.MazeManager;
 import Visualizer.Managers.SearchManager;
 
 import javax.swing.*;
@@ -19,6 +20,7 @@ public class Screen extends JFrame {
 
     private boolean isClickHeld;
     private SearchManager searchManager;
+    private MazeManager mazeManager;
 
     public Screen() {
         super("Algorithm Visualizer");
@@ -26,6 +28,7 @@ public class Screen extends JFrame {
         setLayout(null);
 
         searchManager = new SearchManager();
+        mazeManager = new MazeManager();
 
         BoardManager boardManager = BoardManager.getInstance();
 
@@ -115,17 +118,16 @@ public class Screen extends JFrame {
         button2.addActionListener(e ->
             new Thread(() -> {
                 Cell[][] cells = BoardManager.getInstance().getCells();
-//                try{
-//                        while(!saw.isFinished){
-//                            saw.stepMazeGeneration(cells);
-//                            Thread.sleep(1);
-//                        }
-//
-//                    }
-//                    catch (InterruptedException exception) {
-//
-//                    }
-                System.out.println("BTN2");
+                try{
+                        while(!mazeManager.isFinished()){
+                            mazeManager.stepMazeGeneration(cells);
+                            Thread.sleep(2);
+                        }
+
+                    }
+                    catch (InterruptedException exception) {
+
+                    }
             }).start());
     }
 
@@ -254,7 +256,6 @@ public class Screen extends JFrame {
 }
 
 class CellColors {
-
     public static Color getCellColor(Cell cell){
 
         return switch (cell.getCellType()) {

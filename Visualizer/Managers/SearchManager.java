@@ -2,6 +2,7 @@ package Visualizer.Managers;
 
 import Visualizer.Cell;
 import Visualizer.SearchAlgortihms.AStar.AStar;
+import Visualizer.SearchAlgortihms.GreedyBFS;
 import Visualizer.SearchAlgortihms.SearchAlgorithm;
 
 import java.util.ArrayList;
@@ -13,8 +14,8 @@ public class SearchManager {
     public SearchManager() {
         searchAlgorithm = new ArrayList<>();
 
-        AStar aStar = new AStar();
-        searchAlgorithm.add(aStar);
+        searchAlgorithm.add(new GreedyBFS());
+        searchAlgorithm.add(new AStar());
     }
 
     public boolean isFinished(){
@@ -35,12 +36,5 @@ public class SearchManager {
         currentAlgorithmIndex++;
         currentAlgorithmIndex %= searchAlgorithm.size();
     }
-
-    public void stepAlgorithm(){
-        searchAlgorithm.get(currentAlgorithmIndex).stepSearch();
-    }
-
-
-
 
 }

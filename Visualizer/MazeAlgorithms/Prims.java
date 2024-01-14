@@ -5,47 +5,47 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Stack;
 
-public class SAW extends MazeAlgorithm {
+public class Prims extends MazeAlgorithm {
 
     private final HashSet<Cell> closedSet;
-    private final Stack<Cell> stack;
+    private final ArrayList<Cell> uncheckedNeighbours;
     private Cell current, previous;
     private boolean isFinished;
 
-    public SAW() {
+    public Prims() {
         closedSet = new HashSet<>();
-        stack = new Stack<>();
+        uncheckedNeighbours = new ArrayList<>();
     }
 
     @Override
     public void stepMazeGeneration(Cell[][] cells) {
         if(current == null){
-            current = cells[0][0];
+            int randomX = (int)(Math.random() * cells.length);
+            int randomY = (int)(Math.random() * cells.length);
+
+            current = cells[randomY][randomX];
+            previous = current;
             closedSet.add(current);
-        }
-        if(previous == null)
-            previous = cells[0][0];
 
-        if(closedSet.size() == cells.length * cells[0].length){
-            isFinished = true;
-            if(previous != null) {
-                previous.setCellType(Cell.CellType.EMPTY);
-            }
+            current.setupNeighbours(cells, false);
+            uncheckedNeighbours.addAll(current.getNeighbours());
+        }
+        if(uncheckedNeighbours.isEmpty())
             return;
+
+        closedSet.add(current);
+
+        for(Cell neighbour : current.getNeighbours()){
+            if(!closedSet.contains(neighbour)){
+                closedSet.add(neighbour);
+                current.removeWall(neighbour);
+                neighbour.setupNeighbours(cells, false);
+                uncheckedNeighbours.add(neighbour);
+
+            }
         }
+        current = popRandomUncheckedCell();
 
-        highlight(current);
-
-        Cell next = getRandomNeighbour(cells, current);
-        if(next != null){
-            closedSet.add(next);
-            stack.push(current);
-            current.removeWall(next);
-            current = next;
-
-        }else if(stack.size() != 0){
-            current = stack.pop();
-        }
     }
 
     private void highlight(Cell current){
@@ -55,6 +55,12 @@ public class SAW extends MazeAlgorithm {
         previous.setCellType(Cell.CellType.EMPTY);
         current.setCellType(Cell.CellType.HIGHLIGHT);
         previous = current;
+    }
+
+    public Cell popRandomUncheckedCell(){
+        int index = (int)(Math.random() * uncheckedNeighbours.size());
+
+        return uncheckedNeighbours.remove(index);
     }
 
     public Cell getRandomNeighbour(Cell[][] cells, Cell current) {
