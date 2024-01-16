@@ -4,14 +4,14 @@ import Visualizer.Cell;
 import java.util.ArrayList;
 
 public abstract class SearchAlgorithm  {
-    public boolean isFinished = false;
+    public boolean isRunning;
     protected ArrayList<Cell> openSet;
     protected ArrayList<Cell> closedSet;
     protected Cell startCell, endCell;
 
 
-    public void reconstructPath(){
-        Cell current = endCell;
+    public void reconstructPath(Cell currentCell){
+        Cell current = currentCell;
         while(!current.equals(startCell)){
             current = current.getCameFrom();
             current.setCellType(Cell.CellType.PATH);
@@ -29,7 +29,8 @@ public abstract class SearchAlgorithm  {
 
         for (Cell[] value : cells) {
             for (Cell cell : value) {
-                if (cell.getCellType() == Cell.CellType.PATH || cell.getCellType() == Cell.CellType.CLOSE_SET || cell.getCellType() == Cell.CellType.OPEN_SET) {
+                Cell.CellType cellType = cell.getCellType();
+                if (cellType != Cell.CellType.START_POINT && cellType != Cell.CellType.END_POINT && cellType != Cell.CellType.WALL) {
                     cell.setCellType(Cell.CellType.EMPTY);
                 }
             }
@@ -39,12 +40,13 @@ public abstract class SearchAlgorithm  {
         this.openSet = new ArrayList<>();
         this.closedSet = new ArrayList<>();
 
-        this.openSet.add(startCell);
-
         this.startCell = startCell;
         this.endCell = endCell;
 
-        isFinished = false;
+        this.openSet.add(startCell);
+
+
+        isRunning = true;
 
     }
     public void setupCellTypes() {

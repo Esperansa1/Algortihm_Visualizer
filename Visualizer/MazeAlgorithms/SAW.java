@@ -3,31 +3,38 @@ package Visualizer.MazeAlgorithms;
 import Visualizer.Cell;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Stack;
 
 public class SAW extends MazeAlgorithm {
 
-    private final HashSet<Cell> closedSet;
-    private final Stack<Cell> stack;
+    private HashSet<Cell> closedSet;
+    private Stack<Cell> stack;
     private Cell current, previous;
-    private boolean isFinished;
+    private boolean isRunning;
 
-    public SAW() {
+    @Override
+    public void initializeMazeGeneration(Cell[][] cells) {
+        super.initializeMazeGeneration(cells);
+        isRunning = true;
+
         closedSet = new HashSet<>();
         stack = new Stack<>();
+
+        int randomY = (int)(Math.random() * cells.length);
+        int randomX = (int)(Math.random() * cells.length);
+
+        current = cells[randomY][randomX];
+        previous = current;
+
+        closedSet.add(current);
+
     }
 
     @Override
     public void stepMazeGeneration(Cell[][] cells) {
-        if(current == null){
-            current = cells[0][0];
-            closedSet.add(current);
-        }
-        if(previous == null)
-            previous = cells[0][0];
-
         if(closedSet.size() == cells.length * cells[0].length){
-            isFinished = true;
+            isRunning = false;
             if(previous != null) {
                 previous.setCellType(Cell.CellType.EMPTY);
             }
@@ -36,7 +43,7 @@ public class SAW extends MazeAlgorithm {
 
         highlight(current);
 
-        Cell next = getRandomNeighbour(cells, current);
+        Cell next = getRandomNeighbour(current);
         if(next != null){
             closedSet.add(next);
             stack.push(current);
@@ -57,43 +64,20 @@ public class SAW extends MazeAlgorithm {
         previous = current;
     }
 
-    public Cell getRandomNeighbour(Cell[][] cells, Cell current) {
-        ArrayList<Cell> possibleOptions = new ArrayList<>();
+    public Cell getRandomNeighbour(Cell current) {
 
-        int numRows = cells.length;
-        int numCols = cells[0].length;
+        ArrayList<Cell> neighbours = current.getNeighbours();
+        List<Cell> filteredNeighbours = neighbours.stream().filter(cell -> !closedSet.contains(cell)).toList();
 
-        int row = current.getRow();
-        int col = current.getCol();
-
-        Cell top = (row > 0) ? cells[row-1][col] : null;
-        Cell right = (col < numCols - 1) ? cells[row][col+1] : null;
-        Cell bottom = (row < numRows - 1) ? cells[row+1][col] : null;
-        Cell left = (col > 0) ? cells[row][col-1] : null;
-
-        if(top != null && !closedSet.contains(top)){
-            possibleOptions.add(top);
-        }
-        if(right != null && !closedSet.contains(right)){
-            possibleOptions.add(right);
-        }
-        if(bottom != null && !closedSet.contains(bottom)){
-            possibleOptions.add(bottom);
-        }
-        if(left != null && !closedSet.contains(left)){
-            possibleOptions.add(left);
-        }
-
-        int randomIndex = (int)(Math.random()*possibleOptions.size());
-
-        if(possibleOptions.size() == 0) return null;
-
-        return possibleOptions.get(randomIndex);
+        if(filteredNeighbours.size() == 0)
+            return null;
+        int randomIndex = (int)(Math.random() * filteredNeighbours.size());
+        return filteredNeighbours.get(randomIndex);
     }
 
     @Override
-    public boolean isFinished() {
-        return isFinished;
+    public boolean isRunning() {
+        return isRunning;
     }
 
 }

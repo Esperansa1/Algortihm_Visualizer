@@ -99,29 +99,26 @@ public class Screen extends JFrame {
         setResizable(false);
         setVisible(true);
 
-        button1.addActionListener(e -> {
-                new Thread(() -> {
-
-                    while (!searchManager.isFinished()) {
-                        try{
-                            searchManager.stepSearch();
-                            Thread.sleep(30);
-                        }
-                        catch (InterruptedException exception) {
-                            break;
-                        }
-                    }
-                }).start();
-
-        });
+        Cell[][] cells = BoardManager.getInstance().getCells();
+        button1.addActionListener(e -> new Thread(() -> {
+            while (searchManager.isRunning()) {
+                try{
+                    searchManager.stepSearch();
+                    Thread.sleep(20);
+                }
+                catch (InterruptedException exception) {
+                    break;
+                }
+            }
+        }).start());
 
         button2.addActionListener(e ->
             new Thread(() -> {
-                Cell[][] cells = BoardManager.getInstance().getCells();
+                mazeManager.initializeMazeGeneration(cells);
                 try{
-                        while(!mazeManager.isFinished()){
+                        while(mazeManager.isRunning()){
                             mazeManager.stepMazeGeneration(cells);
-                            Thread.sleep(2);
+                            Thread.sleep(1);
                         }
 
                     }

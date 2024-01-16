@@ -43,8 +43,8 @@ public class GreedyBFS extends SearchAlgorithm {
 
     @Override
     public void stepSearch() {
-        if (isFinished || openSet.isEmpty()) {
-            isFinished = true;
+        if (!isRunning || openSet.isEmpty()) {
+            isRunning = true;
             return;
         }
 
@@ -55,8 +55,8 @@ public class GreedyBFS extends SearchAlgorithm {
         setupCellTypes();
 
         if (isGoal(endCell, currentCell)) {
-            reconstructPath();
-            isFinished = true;
+            reconstructPath(currentCell);
+            isRunning = false;
             return;
         }
 

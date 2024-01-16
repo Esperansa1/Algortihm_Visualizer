@@ -2,8 +2,11 @@ package Visualizer.Managers;
 
 import Visualizer.Cell;
 import Visualizer.SearchAlgortihms.AStar.AStar;
+
 import Visualizer.SearchAlgortihms.GreedyBFS;
+import Visualizer.SearchAlgortihms.Pledge;
 import Visualizer.SearchAlgortihms.SearchAlgorithm;
+import Visualizer.SearchAlgortihms.Tremaux;
 
 import java.util.ArrayList;
 
@@ -14,12 +17,14 @@ public class SearchManager {
     public SearchManager() {
         searchAlgorithm = new ArrayList<>();
 
+        searchAlgorithm.add(new Tremaux());
+        searchAlgorithm.add(new Pledge());
         searchAlgorithm.add(new GreedyBFS());
         searchAlgorithm.add(new AStar());
     }
 
-    public boolean isFinished(){
-        return getCurrentAlgorithm().isFinished;
+    public boolean isRunning(){
+        return getCurrentAlgorithm().isRunning;
     }
     private SearchAlgorithm getCurrentAlgorithm(){
         return searchAlgorithm.get(currentAlgorithmIndex);
