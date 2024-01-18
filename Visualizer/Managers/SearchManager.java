@@ -26,9 +26,15 @@ public class SearchManager {
     public boolean isRunning(){
         return getCurrentAlgorithm().isRunning;
     }
-    private SearchAlgorithm getCurrentAlgorithm(){
+    private SearchAlgorithm getCurrentAlgorithm()
+    {
         return searchAlgorithm.get(currentAlgorithmIndex);
     }
+
+    public String getCurrentAlgorithmName(){
+        return getCurrentAlgorithm().toString();
+    }
+
 
     public void stepSearch(){
         getCurrentAlgorithm().stepSearch();

@@ -79,4 +79,9 @@ public class AStar extends SearchAlgorithm {
         }
         reconstructPath(currentCell);
     }
+
+    @Override
+    public String toString() {
+        return "A Star (A*)";
+    }
 }

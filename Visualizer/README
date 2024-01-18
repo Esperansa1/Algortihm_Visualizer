@@ -1,6 +1,4 @@
 TODO:
-    -- Add a switch for diagonals
-    -- Tremaux's Algorithm (SEARCH ALGORITHM)
     -- Add cool animations search
     -- Replace path colors with actual path
     -- Replace start point and end point from yellow to a circle
@@ -8,7 +6,9 @@ TODO:
 
 FINISHED:
     -- GreedyBFS, A*
-    -- SAW, Iterative randomized Prim's Algorithm, Pledge's Algorithm
+    -- SAW, Iterative randomized Prim's Algorithm
+    -- Pledge's Algorithm
+    -- Tremaux Algorithm
 
 POSTPONED:
     -- Add possible different hueristic for algorithms that use such

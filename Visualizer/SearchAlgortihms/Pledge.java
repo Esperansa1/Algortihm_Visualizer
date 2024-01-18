@@ -167,5 +167,10 @@ public class Pledge extends SearchAlgorithm {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Pledge's Algorithm";
+    }
+
 
 }

@@ -72,4 +72,8 @@ public class Prims extends MazeAlgorithm {
         return isRunning;
     }
 
+    @Override
+    public String toString() {
+        return "Prim's Algorithm";
+    }
 }

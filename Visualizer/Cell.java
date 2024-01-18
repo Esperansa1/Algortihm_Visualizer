@@ -72,7 +72,7 @@ public class Cell {
         return Math.sqrt(distances[0] * distances[0] + distances[1] * distances[1]);
     }
 
-    public void setupNeighbours(Cell[][] cells, boolean allowDiagonals){
+    public void setupNeighbours(Cell[][] cells){
         neighbours = new ArrayList<>();
 
         int numRows = cells.length;
@@ -98,28 +98,6 @@ public class Cell {
             neighbours.add(cells[row - 1][col]);
         }
 
-        // Diagonals
-        if (allowDiagonals) {
-            // Down-Right
-            if (row + 1 < numRows && col + 1 < numCols) {
-                neighbours.add(cells[row + 1][col + 1]);
-            }
-
-            // Up-Right
-            if (row - 1 >= 0 && col + 1 < numCols) {
-                neighbours.add(cells[row - 1][col + 1]);
-            }
-
-            // Up-Left
-            if (row - 1 >= 0 && col - 1 >= 0) {
-                neighbours.add(cells[row - 1][col - 1]);
-            }
-
-            // Down-Left
-            if (row + 1 < numRows && col - 1 >= 0) {
-                neighbours.add(cells[row + 1][col - 1]);
-            }
-        }
     }
     public ArrayList<Cell> getNeighbours() {
         return neighbours;

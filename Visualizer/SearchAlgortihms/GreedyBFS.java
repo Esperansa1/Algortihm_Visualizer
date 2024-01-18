@@ -70,4 +70,9 @@ public class GreedyBFS extends SearchAlgorithm {
         }
 
     }
+    @Override
+    public String toString() {
+        return "GreedyBFS";
+    }
+
 }

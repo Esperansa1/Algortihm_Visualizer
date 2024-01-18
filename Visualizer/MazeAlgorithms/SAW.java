@@ -28,7 +28,6 @@ public class SAW extends MazeAlgorithm {
         previous = current;
 
         closedSet.add(current);
-
     }
 
     @Override
@@ -78,6 +77,11 @@ public class SAW extends MazeAlgorithm {
     @Override
     public boolean isRunning() {
         return isRunning;
+    }
+
+    @Override
+    public String toString() {
+        return "Self Avoiding Walk";
     }
 
 }

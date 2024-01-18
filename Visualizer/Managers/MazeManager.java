@@ -15,8 +15,8 @@ public class MazeManager {
     public MazeManager() {
         mazeAlgorithm = new ArrayList<>();
 
-        mazeAlgorithm.add(new Prims());
         mazeAlgorithm.add(new SAW());
+        mazeAlgorithm.add(new Prims());
     }
 
     public boolean isRunning(){
@@ -34,6 +34,9 @@ public class MazeManager {
         getCurrentAlgorithm().initializeMazeGeneration(cells);
     }
 
+    public String getCurrentAlgorithmName(){
+        return getCurrentAlgorithm().toString();
+    }
 
     public void nextAlgorithm(){
         currentAlgorithmIndex++;

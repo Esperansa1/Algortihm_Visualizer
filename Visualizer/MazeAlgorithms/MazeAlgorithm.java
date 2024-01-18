@@ -14,15 +14,15 @@ public abstract class MazeAlgorithm {
                 cell.setWalls(new boolean[]{true, true, true, true});
             }
         }
-
-
         for(Cell[] cellArray : cells) {
             for (Cell cell : cellArray) {
-                cell.setupNeighbours(cells, false);
+                cell.setupNeighbours(cells);
             }
         }
 
     }
+
+
 
 
 }

@@ -36,7 +36,7 @@ public abstract class SearchAlgorithm  {
             }
         }
 
-        initializeNeighbours(cells, false);
+        initializeNeighbours(cells);
         this.openSet = new ArrayList<>();
         this.closedSet = new ArrayList<>();
 
@@ -81,13 +81,13 @@ public abstract class SearchAlgorithm  {
 
         return true;
 
-        }
+    }
 
 
-    public void initializeNeighbours(Cell[][] cells, boolean allowDiagonals){
+    public void initializeNeighbours(Cell[][] cells){
         for(Cell[] cellArray : cells) {
             for(Cell cell : cellArray) {
-                cell.setupNeighbours(cells, allowDiagonals);
+                cell.setupNeighbours(cells);
             }
         }
     }

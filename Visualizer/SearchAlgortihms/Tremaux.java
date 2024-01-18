@@ -23,11 +23,11 @@ public class Tremaux extends SearchAlgorithm {
     public void setupCellTypes() {
         super.setupCellTypes();
         for(Cell mark : marks){
-            mark.setCellType(Cell.CellType.HIGHLIGHT);
+            mark.setCellType(Cell.CellType.OPEN_SET);
         }
     }
 
-    public ArrayList<Cell> getUnvisitedNeighbours(Cell currentCell){
+    private ArrayList<Cell> getUnvisitedNeighbours(Cell currentCell){
         ArrayList<Cell> cells = new ArrayList<>();
         for (Cell neighbour : currentCell.getNeighbours()) {
             if (neighbour.getCellType() == Cell.CellType.WALL || closedSet.contains(neighbour) || !isPossibleToMove(currentCell, neighbour) || marks.contains(neighbour)) {
@@ -63,16 +63,17 @@ public class Tremaux extends SearchAlgorithm {
         Cell next = unvisitedNeighbours.isEmpty() ? null :  getRandomNeighbour(unvisitedNeighbours);
         if(next != null){
             closedSet.add(next);
-            marks.push(next);
+            if(!next.getNeighbours().isEmpty())
+                marks.push(next);
             next.setCameFrom(currentCell);
         }else if(marks.size() != 0){
             currentCell = marks.pop();
         }
+    }
 
-
-
-
-
+    @Override
+    public String toString() {
+        return "Tremaux's Algorithm";
     }
 
 

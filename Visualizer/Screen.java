@@ -6,9 +6,7 @@ import Visualizer.Managers.SearchManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 public class Screen extends JFrame {
 
@@ -52,7 +50,7 @@ public class Screen extends JFrame {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                if(SwingUtilities.isLeftMouseButton(e)) {
+                if (SwingUtilities.isLeftMouseButton(e)) {
                     isClickHeld = true;
                     int x = e.getX();
                     int y = e.getY();
@@ -62,7 +60,6 @@ public class Screen extends JFrame {
         });
 
         drawingPanel.addMouseMotionListener(new MouseAdapter() {
-
             @Override
             public void mousePressed(MouseEvent e) {
                 int x = e.getX();
@@ -81,18 +78,31 @@ public class Screen extends JFrame {
         });
 
         int padding = Cell.CELL_SIZE;
-        drawingPanel.setBounds(0, 0, GRID_WIDTH+padding, GRID_HEIGHT+padding);
+        drawingPanel.setBounds(0, 0, GRID_WIDTH + padding, GRID_HEIGHT + padding);
 
         JButton button1 = getButton("Start Pathfinding", 50, padding);
         JButton button2 = getButton("Generate Maze", 100, padding);
 
-        JSlider slider = getSlider(padding);
+        JLabel pathfindingLabel = getLabel(searchManager.getCurrentAlgorithmName(), 150, padding);
+        JButton button3 = getButton("Change Pathfinding", 180, padding);
+
+        JLabel mazeLabel = getLabel(mazeManager.getCurrentAlgorithmName(), 220, padding);
+        JButton button4 = getButton("Change Maze", 250, padding);
 
         // Add the buttons to the content pane
+        JSlider slider = getSlider(310, padding);
+
         getContentPane().add(drawingPanel);
         getContentPane().add(slider);
         getContentPane().add(button1);
         getContentPane().add(button2);
+
+        getContentPane().add(pathfindingLabel);
+        getContentPane().add(button3);
+
+        getContentPane().add(mazeLabel);
+        getContentPane().add(button4);
+
 
         setSize(WIDTH + padding, HEIGHT + padding);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -126,8 +136,27 @@ public class Screen extends JFrame {
 
                     }
             }).start());
+
+        button3.addActionListener(e -> {
+            searchManager.nextAlgorithm();
+            pathfindingLabel.setText(searchManager.getCurrentAlgorithmName());
+        });
+
+        button4.addActionListener(e -> {
+            mazeManager.nextAlgorithm();
+            mazeLabel.setText(mazeManager.getCurrentAlgorithmName());
+        });
+
     }
 
+
+    private JLabel getLabel(String labelText, int y, int padding){
+        JLabel label = new JLabel(labelText);
+        int labelWidth = 150;
+        int labelAlignment = GRID_WIDTH + (WIDTH - GRID_WIDTH - labelWidth + padding)/2;
+        label.setBounds(labelAlignment, y, labelWidth, 40);
+        return label;
+    }
 
     private JButton getButton(String buttonText, int y, int padding){
         JButton button = new JButton(buttonText);
@@ -153,7 +182,7 @@ public class Screen extends JFrame {
         return toggleButton;
     }
 
-    private JSlider getSlider(int padding) {
+    private JSlider getSlider(int y, int padding) {
         JSlider slider = new JSlider(JSlider.HORIZONTAL, 20, 100, 40);
         slider.setMajorTickSpacing(20);
         slider.setMinorTickSpacing(20);
@@ -182,7 +211,7 @@ public class Screen extends JFrame {
 
         int sliderWidth = 100;
         int sliderAlignment = GRID_WIDTH + (WIDTH - GRID_WIDTH - sliderWidth + padding)/2;
-        slider.setBounds(sliderAlignment, 150, sliderWidth, 40);
+        slider.setBounds(sliderAlignment, y, sliderWidth, 40);
         return slider;
     }
 
