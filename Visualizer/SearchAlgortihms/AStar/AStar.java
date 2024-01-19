@@ -43,8 +43,8 @@ public class AStar extends SearchAlgorithm {
 
     @Override
     public void stepSearch() {
-        if (!isRunning || openSet.isEmpty()) {
-            isRunning = true;
+        if (openSet.isEmpty()) {
+            isRunning = false;
             return;
         }
 

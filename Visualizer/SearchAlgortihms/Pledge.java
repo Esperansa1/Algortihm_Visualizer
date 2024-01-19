@@ -24,14 +24,13 @@ public class Pledge extends SearchAlgorithm {
     }
 
     private void moveForward(){
-        currentCell.setCellType(Cell.CellType.PATH);
-        closedSet.add(currentCell);
-
         Cell forward = getForward();
-
-        forward.setCameFrom(currentCell);
+        if(currentCell.getCellType() != Cell.CellType.START_POINT && currentCell.getCellType() != Cell.CellType.END_POINT){
+            currentCell.setCellType(Cell.CellType.CLOSE_SET);
+        }
+        if(forward.getCameFrom() == null)
+            forward.setCameFrom(currentCell);
         currentCell = forward;
-
 
     }
 
@@ -42,28 +41,33 @@ public class Pledge extends SearchAlgorithm {
             isRunning = false;
             return;
         }
-
-        if (noWallOnForward()){
-            moveForward();
-        }
-        turnLeft();
-        while(!isGoal(endCell, currentCell)){
-            if(isRightClear()){
-                turnRight();
+        if(currentCell.equals(startCell)){
+            while (noWallOnForward()){
                 moveForward();
-            }else if(noWallOnForward()){
-                moveForward();
-            }else{
-                turnLeft();
             }
+            turnLeft();
         }
 
 
+        if(isRightClear()){
+            turnRight();
+            moveForward();
+        }else if(noWallOnForward()){
+            moveForward();
+        }else{
+            turnLeft();
+        }
 
     }
 
     private boolean isRightClear(){
         boolean[] walls = currentCell.getWalls();
+
+        turnRight();
+        Cell rightCell = getForward();
+        turnLeft();
+        if(rightCell != null && rightCell.getCellType() == Cell.CellType.WALL)
+            return false;
 
         switch(currentDirection){
             case UP -> {
@@ -131,7 +135,12 @@ public class Pledge extends SearchAlgorithm {
 
     private boolean noWallOnForward(){
         boolean[] walls = currentCell.getWalls();
-        System.out.println(Arrays.toString(walls) + " " + currentDirection);
+
+        Cell forward = getForward();
+
+        if(forward != null && forward.getCellType() == Cell.CellType.WALL)
+            return false;
+
         switch(currentDirection){
             case UP -> {
                 return !walls[0];

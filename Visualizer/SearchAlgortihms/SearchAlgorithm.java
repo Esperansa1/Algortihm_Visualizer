@@ -14,6 +14,7 @@ public abstract class SearchAlgorithm  {
         Cell current = currentCell;
         while(!current.equals(startCell)){
             current = current.getCameFrom();
+            System.out.println(current);
             current.setCellType(Cell.CellType.PATH);
         }
         startCell.setCellType(Cell.CellType.START_POINT);
@@ -44,7 +45,6 @@ public abstract class SearchAlgorithm  {
         this.endCell = endCell;
 
         this.openSet.add(startCell);
-
 
         isRunning = true;
 

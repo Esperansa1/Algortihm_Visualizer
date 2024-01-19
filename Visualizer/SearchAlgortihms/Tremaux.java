@@ -21,10 +21,10 @@ public class Tremaux extends SearchAlgorithm {
 
     @Override
     public void setupCellTypes() {
-        super.setupCellTypes();
         for(Cell mark : marks){
             mark.setCellType(Cell.CellType.OPEN_SET);
         }
+        super.setupCellTypes();
     }
 
     private ArrayList<Cell> getUnvisitedNeighbours(Cell currentCell){
@@ -46,8 +46,8 @@ public class Tremaux extends SearchAlgorithm {
 
     @Override
     public void stepSearch() {
-        if (!isRunning || marks.isEmpty()) {
-            isRunning = true;
+        if (marks.isEmpty()) {
+            isRunning = false;
             return;
         }
         if (isGoal(endCell, currentCell)) {
@@ -62,11 +62,11 @@ public class Tremaux extends SearchAlgorithm {
 
         Cell next = unvisitedNeighbours.isEmpty() ? null :  getRandomNeighbour(unvisitedNeighbours);
         if(next != null){
-            closedSet.add(next);
+            closedSet.add(currentCell);
             if(!next.getNeighbours().isEmpty())
                 marks.push(next);
             next.setCameFrom(currentCell);
-        }else if(marks.size() != 0){
+        }else if(!marks.isEmpty()){
             currentCell = marks.pop();
         }
     }

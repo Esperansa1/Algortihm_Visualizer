@@ -46,9 +46,6 @@ public class BoardManager {
         return cells;
     }
 
-//    public void setCells(Cell[][] cells) {
-//        this.cells = cells;
-//    }
 
     public void updateCellsArray(int rows, int cols){ // Maybe instead of making new array, change it so it will only delete the sides
         this.cells = new Cell[rows][cols];

@@ -17,8 +17,8 @@ public class Screen extends JFrame {
     private final JPanel drawingPanel;
 
     private boolean isClickHeld;
-    private SearchManager searchManager;
-    private MazeManager mazeManager;
+    private final SearchManager searchManager;
+    private final MazeManager mazeManager;
 
     public Screen() {
         super("Algorithm Visualizer");
@@ -114,7 +114,7 @@ public class Screen extends JFrame {
             while (searchManager.isRunning()) {
                 try{
                     searchManager.stepSearch();
-                    Thread.sleep(20);
+                    Thread.sleep(1);
                 }
                 catch (InterruptedException exception) {
                     break;
@@ -125,16 +125,16 @@ public class Screen extends JFrame {
         button2.addActionListener(e ->
             new Thread(() -> {
                 mazeManager.initializeMazeGeneration(cells);
-                try{
+//                try{
                         while(mazeManager.isRunning()){
                             mazeManager.stepMazeGeneration(cells);
-                            Thread.sleep(1);
+//                            Thread.sleep(1);
                         }
 
-                    }
-                    catch (InterruptedException exception) {
-
-                    }
+//                    }
+//                    catch (InterruptedException exception) {
+//
+//                    }
             }).start());
 
         button3.addActionListener(e -> {
@@ -278,6 +278,12 @@ public class Screen extends JFrame {
             searchManager.initializeSearch(BoardManager.getInstance().getCells(), BoardManager.getInstance().getStartCell(), BoardManager.getInstance().getEndCell());
         }
     }
+
+
+    public static void main(String[] args) {
+        new Screen();
+    }
+
 
 }
 
