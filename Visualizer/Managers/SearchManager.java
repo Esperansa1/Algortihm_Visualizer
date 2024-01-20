@@ -24,6 +24,7 @@ public class SearchManager {
     }
 
     public boolean isRunning(){
+        System.out.println(getCurrentAlgorithm().isRunning);
         return getCurrentAlgorithm().isRunning;
     }
     private SearchAlgorithm getCurrentAlgorithm()
@@ -44,10 +45,10 @@ public class SearchManager {
     }
 
     public void nextAlgorithm(){
-        SearchAlgorithm currentAlgorithm = getCurrentAlgorithm();
-        currentAlgorithm.resetAlgorithm();
+        getCurrentAlgorithm().resetAlgorithm();
         currentAlgorithmIndex++;
         currentAlgorithmIndex %= searchAlgorithm.size();
+        getCurrentAlgorithm().resetAlgorithm();
     }
 
 }

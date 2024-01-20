@@ -14,7 +14,6 @@ public abstract class SearchAlgorithm  {
         Cell current = currentCell;
         while(!current.equals(startCell)){
             current = current.getCameFrom();
-            System.out.println(current);
             current.setCellType(Cell.CellType.PATH);
         }
         startCell.setCellType(Cell.CellType.START_POINT);
@@ -26,10 +25,21 @@ public abstract class SearchAlgorithm  {
 
 
     public void resetAlgorithm(){
+
+        if(openSet != null)
+            openSet.forEach(cell -> {if(cell != null) cell.setCameFrom(null);});
+        if(closedSet != null)
+            closedSet.forEach(cell -> {if(cell != null) cell.setCameFrom(null);});
+
+
         this.openSet = new ArrayList<>();
         this.closedSet = new ArrayList<>();
 
-        this.openSet.add(startCell);
+        if(this.startCell != null && this.endCell != null) {
+            this.startCell.setCameFrom(null);
+            this.endCell.setCameFrom(null);
+            this.openSet.add(startCell);
+        }
 
         isRunning = true;
     }

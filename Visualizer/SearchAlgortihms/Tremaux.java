@@ -14,9 +14,16 @@ public class Tremaux extends SearchAlgorithm {
     public void initializeSearch(Cell[][] cells, Cell startCell, Cell endCell) {
         super.initializeSearch(cells, startCell, endCell);
         currentCell = startCell;
-        System.out.println(currentCell);
         marks = new Stack<>();
         marks.push(startCell);
+
+    }
+
+    @Override
+    public void resetAlgorithm() {
+        super.resetAlgorithm();
+//        if(marks != null)
+//            closedSet.forEach(cell -> { if(cell != null) cell.setCameFrom(null); });
 
     }
 

@@ -12,6 +12,10 @@ public abstract class MazeAlgorithm {
         for(Cell[] cellArray : cells) {
             for (Cell cell : cellArray) {
                 cell.setWalls(new boolean[]{true, true, true, true});
+                Cell.CellType type = cell.getCellType();
+                if(type != Cell.CellType.START_POINT && type != Cell.CellType.END_POINT){
+                    cell.setCellType(Cell.CellType.EMPTY);
+                }
             }
         }
         for(Cell[] cellArray : cells) {
@@ -19,7 +23,6 @@ public abstract class MazeAlgorithm {
                 cell.setupNeighbours(cells);
             }
         }
-
     }
 
 

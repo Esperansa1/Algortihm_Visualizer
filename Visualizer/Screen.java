@@ -23,13 +23,17 @@ public class Screen extends JFrame {
     public Screen() {
         super("Algorithm Visualizer");
 
+        // Set layout to null
         setLayout(null);
 
+        // Initialize managers
         searchManager = new SearchManager();
         mazeManager = new MazeManager();
 
+        // Get instance of BoardManager
         BoardManager boardManager = BoardManager.getInstance();
 
+        // Initialize drawing panel
         drawingPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -38,10 +42,28 @@ public class Screen extends JFrame {
                 drawCells(g, cells);
                 drawWalls(g, cells);
             }
-
         };
 
+        // Set click held flag to false
         isClickHeld = false;
+
+        // Add mouse listeners for handling clicks and drags
+        addMouseListeners();
+
+        // Set bounds for drawing panel
+        int padding = Cell.CELL_SIZE;
+        drawingPanel.setBounds(0, 0, GRID_WIDTH + padding, GRID_HEIGHT + padding);
+
+        // Initialize buttons, labels, and slider
+        initializeComponents();
+
+        // Set frame properties
+        setFrameProperties();
+
+    }
+
+    // Method to add mouse listeners for handling clicks and drags
+    private void addMouseListeners() {
         drawingPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -50,105 +72,121 @@ public class Screen extends JFrame {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e)) {
-                    isClickHeld = true;
-                    int x = e.getX();
-                    int y = e.getY();
-                    onMouseClick(x, y);
-                }
+                handleMousePress(e);
             }
         });
 
         drawingPanel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                int x = e.getX();
-                int y = e.getY();
-                onMouseClick(x, y);
+                handleMousePress(e);
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (isClickHeld) {
-                    int x = e.getX();
-                    int y = e.getY();
-                    onMouseClick(x, y);
-                }
+                handleMouseDrag(e);
             }
         });
+    }
 
+    // Method to handle mouse press event
+    private void handleMousePress(MouseEvent e) {
+        if (SwingUtilities.isLeftMouseButton(e)) {
+            isClickHeld = true;
+            int x = e.getX();
+            int y = e.getY();
+            onMouseClick(x, y);
+        }
+    }
+
+    // Method to handle mouse drag event
+    private void handleMouseDrag(MouseEvent e) {
+        if (isClickHeld) {
+            int x = e.getX();
+            int y = e.getY();
+            onMouseClick(x, y);
+        }
+    }
+
+    // Method to initialize buttons, labels, and slider
+    private void initializeComponents() {
         int padding = Cell.CELL_SIZE;
-        drawingPanel.setBounds(0, 0, GRID_WIDTH + padding, GRID_HEIGHT + padding);
 
-        JButton button1 = getButton("Start Pathfinding", 50, padding);
-        JButton button2 = getButton("Generate Maze", 100, padding);
+        JButton startSearchBtn = getButton("Start Pathfinding", 50, padding);
+        JButton startMazeBtn = getButton("Generate Maze", 100, padding);
 
         JLabel pathfindingLabel = getLabel(searchManager.getCurrentAlgorithmName(), 150, padding);
-        JButton button3 = getButton("Change Pathfinding", 180, padding);
+        JButton nextSearchBtn = getButton("Change Pathfinding", 180, padding);
 
         JLabel mazeLabel = getLabel(mazeManager.getCurrentAlgorithmName(), 220, padding);
-        JButton button4 = getButton("Change Maze", 250, padding);
+        JButton nextMazeBtn = getButton("Change Maze", 250, padding);
 
-        // Add the buttons to the content pane
         JSlider slider = getSlider(310, padding);
 
-        getContentPane().add(drawingPanel);
-        getContentPane().add(slider);
-        getContentPane().add(button1);
-        getContentPane().add(button2);
-
-        getContentPane().add(pathfindingLabel);
-        getContentPane().add(button3);
-
-        getContentPane().add(mazeLabel);
-        getContentPane().add(button4);
-
-
-        setSize(WIDTH + padding, HEIGHT + padding);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
-        setVisible(true);
-
         Cell[][] cells = BoardManager.getInstance().getCells();
-        button1.addActionListener(e ->
-            new Thread(() -> {
-                while (searchManager.isRunning()) {
-                    try{
-                        searchManager.stepSearch();
-                        Thread.sleep(1);
-                    }
-                    catch (InterruptedException exception) {
-                        break;
-                    }
-                }
-        }).start());
 
-        button2.addActionListener(e ->
-            new Thread(() -> {
-                mazeManager.initializeMazeGeneration(cells);
-//                try{
-                        while(mazeManager.isRunning()){
-                            mazeManager.stepMazeGeneration(cells);
-//                            Thread.sleep(1);
+        // Button 1: Start Pathfinding
+        startSearchBtn.addActionListener(e ->
+                new Thread(() -> {
+                    Cell startCell = BoardManager.getInstance().getStartCell();
+                    Cell endCell = BoardManager.getInstance().getEndCell();
+                    searchManager.initializeSearch(cells, startCell, endCell);
+
+                    while (searchManager.isRunning()) {
+                        try {
+                            searchManager.stepSearch();
+                            Thread.sleep(1);
+                        } catch (InterruptedException exception) {
+                            break;
                         }
+                    }
+                }).start());
 
-//                    }
-//                    catch (InterruptedException exception) {
-//
-//                    }
-            }).start());
+        // Button 2: Generate Maze
+        startMazeBtn.addActionListener(e ->
+                new Thread(() -> {
+                    mazeManager.initializeMazeGeneration(cells);
+                    while (mazeManager.isRunning()) {
+                        mazeManager.stepMazeGeneration(cells);
+                    }
+                }).start());
 
-        button3.addActionListener(e -> {
+        // Button 3: Change Pathfinding Algorithm
+        nextSearchBtn.addActionListener(e -> {
             searchManager.nextAlgorithm();
             pathfindingLabel.setText(searchManager.getCurrentAlgorithmName());
         });
 
-        button4.addActionListener(e -> {
+        // Button 4: Change Maze Algorithm
+        nextMazeBtn.addActionListener(e -> {
             mazeManager.nextAlgorithm();
             mazeLabel.setText(mazeManager.getCurrentAlgorithmName());
         });
 
+        // Add components to the content pane
+        getContentPane().add(drawingPanel);
+        getContentPane().add(slider);
+
+        getContentPane().add(startSearchBtn);
+        getContentPane().add(startMazeBtn);
+
+        getContentPane().add(pathfindingLabel);
+        getContentPane().add(nextSearchBtn);
+
+        getContentPane().add(mazeLabel);
+        getContentPane().add(nextMazeBtn);
     }
+
+    // Method to set frame properties
+    private void setFrameProperties() {
+        int padding = Cell.CELL_SIZE;
+        setSize(WIDTH + padding, HEIGHT + padding);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
+        setVisible(true);
+    }
+
+
 
     private JLabel getLabel(String labelText, int y, int padding){
         JLabel label = new JLabel(labelText);
@@ -252,16 +290,8 @@ public class Screen extends JFrame {
 
         BoardManager.getInstance().onCellSelected(row,col);
 
-        initializeBoard();
-
         drawingPanel.repaint();
 
-    }
-
-    private void initializeBoard(){
-        if(BoardManager.getInstance().getStartCell() != null && BoardManager.getInstance().getEndCell() != null){
-            searchManager.initializeSearch(BoardManager.getInstance().getCells(), BoardManager.getInstance().getStartCell(), BoardManager.getInstance().getEndCell());
-        }
     }
 
 

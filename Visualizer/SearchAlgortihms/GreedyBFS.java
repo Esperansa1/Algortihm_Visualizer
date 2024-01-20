@@ -10,6 +10,8 @@ public class GreedyBFS extends SearchAlgorithm {
     private Map<Cell, Double> cellMap;
 
     private void initializeCells(Cell[][] starting_cells, Cell startCell, Cell endCell){
+        cellMap = new HashMap<>();
+
         for(Cell[] cellArray : starting_cells){
             for(Cell cell : cellArray){
                 double distance = cell.euclideanDist(endCell);
@@ -22,9 +24,9 @@ public class GreedyBFS extends SearchAlgorithm {
     @Override
     public void initializeSearch(Cell[][] cells, Cell startCell, Cell endCell) {
         super.initializeSearch(cells, startCell, endCell);
-        cellMap = new HashMap<>();
         initializeCells(cells, startCell, endCell);
     }
+
 
     public Cell getLowestScore() {
         if (openSet.isEmpty()) {

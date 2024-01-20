@@ -14,12 +14,20 @@ public class Pledge extends SearchAlgorithm {
     private Cell[][] cells;
     private Cell currentCell;
     private int currentDirection;
+    private int stepCounter;
 
     public void initializeSearch(Cell[][] cells, Cell startCell, Cell endCell) {
         super.initializeSearch(cells,startCell,endCell);
+        this.cells = cells;
+
+    }
+
+    @Override
+    public void resetAlgorithm() {
+        super.resetAlgorithm();
         currentDirection = RIGHT;
         currentCell = startCell;
-        this.cells = cells;
+        stepCounter = 0;
 
     }
 
@@ -27,29 +35,27 @@ public class Pledge extends SearchAlgorithm {
         Cell forward = getForward();
         if(currentCell.getCellType() != Cell.CellType.START_POINT && currentCell.getCellType() != Cell.CellType.END_POINT){
             currentCell.setCellType(Cell.CellType.CLOSE_SET);
+            closedSet.add(currentCell);
         }
         if(forward != null && forward.getCameFrom() == null)
             forward.setCameFrom(currentCell);
         currentCell = forward;
+        stepCounter++;
 
     }
 
     @Override
     public void stepSearch() {
+        if(stepCounter > (cells.length * cells[0].length) * 2){
+            isRunning = false;
+            return;
+        }
         if (isGoal(endCell, currentCell)) {
             reconstructPath(currentCell);
             isRunning = false;
             return;
         }
-        if(currentCell.equals(startCell)){
-            while (noWallOnForward()){
-                moveForward();
-            }
-            turnLeft();
-        }
-
-
-        if(isRightClear()){
+        if(isRightClear()) {
             turnRight();
             moveForward();
         }else if(noWallOnForward()){
@@ -57,7 +63,6 @@ public class Pledge extends SearchAlgorithm {
         }else{
             turnLeft();
         }
-
     }
 
     private boolean isRightClear(){
