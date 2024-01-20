@@ -20,14 +20,6 @@ public class Tremaux extends SearchAlgorithm {
     }
 
     @Override
-    public void resetAlgorithm() {
-        super.resetAlgorithm();
-//        if(marks != null)
-//            closedSet.forEach(cell -> { if(cell != null) cell.setCameFrom(null); });
-
-    }
-
-    @Override
     public void setupCellTypes() {
         for(Cell mark : marks){
             mark.setCellType(Cell.CellType.OPEN_SET);

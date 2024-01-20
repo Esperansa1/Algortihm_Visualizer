@@ -123,11 +123,10 @@ public class Screen extends JFrame {
 
         JSlider slider = getSlider(310, padding);
 
-        Cell[][] cells = BoardManager.getInstance().getCells();
 
-        // Button 1: Start Pathfinding
         startSearchBtn.addActionListener(e ->
                 new Thread(() -> {
+                    Cell[][] cells = BoardManager.getInstance().getCells();
                     Cell startCell = BoardManager.getInstance().getStartCell();
                     Cell endCell = BoardManager.getInstance().getEndCell();
                     searchManager.initializeSearch(cells, startCell, endCell);
@@ -142,22 +141,20 @@ public class Screen extends JFrame {
                     }
                 }).start());
 
-        // Button 2: Generate Maze
         startMazeBtn.addActionListener(e ->
                 new Thread(() -> {
+                    Cell[][] cells = BoardManager.getInstance().getCells();
                     mazeManager.initializeMazeGeneration(cells);
                     while (mazeManager.isRunning()) {
                         mazeManager.stepMazeGeneration(cells);
                     }
                 }).start());
 
-        // Button 3: Change Pathfinding Algorithm
         nextSearchBtn.addActionListener(e -> {
             searchManager.nextAlgorithm();
             pathfindingLabel.setText(searchManager.getCurrentAlgorithmName());
         });
 
-        // Button 4: Change Maze Algorithm
         nextMazeBtn.addActionListener(e -> {
             mazeManager.nextAlgorithm();
             mazeLabel.setText(mazeManager.getCurrentAlgorithmName());

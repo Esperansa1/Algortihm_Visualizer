@@ -71,7 +71,6 @@ public abstract class SearchAlgorithm  {
         startCell.setCellType(Cell.CellType.START_POINT);
         endCell.setCellType(Cell.CellType.END_POINT);
 
-
     }
 
     protected boolean isPossibleToMove(Cell current, Cell wanted){

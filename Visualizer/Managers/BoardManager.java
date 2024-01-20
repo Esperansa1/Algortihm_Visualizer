@@ -41,15 +41,18 @@ public class BoardManager {
 
 
     public void updateCellsArray(int rows, int cols){ // Maybe instead of making new array, change it so it will only delete the sides
-        this.cells = new Cell[rows][cols];
-        startCell = null;
-        endCell = null;
+        Cell[][] newCells = new Cell[rows][cols];
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                this.cells[i][j] = new Cell(i,j);
+
+                if(cells != null && i < cells.length && j < cells[0].length)
+                    newCells[i][j] = cells[i][j];
+                else
+                    newCells[i][j] = new Cell(i, j);
             }
         }
+        this.cells = newCells;
         initializeNeighbours(cells);
 
     }
@@ -77,9 +80,7 @@ public class BoardManager {
         else{
             this.cells[row][col].setCellType(Cell.CellType.WALL);
         }
-
         // Later add Weights
-
     }
 
 }
