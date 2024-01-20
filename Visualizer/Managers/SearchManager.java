@@ -44,6 +44,8 @@ public class SearchManager {
     }
 
     public void nextAlgorithm(){
+        SearchAlgorithm currentAlgorithm = getCurrentAlgorithm();
+        currentAlgorithm.resetAlgorithm();
         currentAlgorithmIndex++;
         currentAlgorithmIndex %= searchAlgorithm.size();
     }

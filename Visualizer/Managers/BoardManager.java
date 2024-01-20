@@ -23,6 +23,7 @@ public class BoardManager {
         int cols = Screen.GRID_HEIGHT / Cell.CELL_SIZE;
 
         updateCellsArray(rows,cols);
+        initializeNeighbours(cells);
 
     }
 
@@ -30,16 +31,8 @@ public class BoardManager {
         return startCell;
     }
 
-    public void setStartCell(Cell startCell) {
-        this.startCell = startCell;
-    }
-
     public Cell getEndCell() {
         return endCell;
-    }
-
-    public void setEndCell(Cell endCell) {
-        this.endCell = endCell;
     }
 
     public Cell[][] getCells() {
@@ -57,7 +50,16 @@ public class BoardManager {
                 this.cells[i][j] = new Cell(i,j);
             }
         }
+        initializeNeighbours(cells);
 
+    }
+
+    public void initializeNeighbours(Cell[][] cells){
+        for(Cell[] cellArray : cells) {
+            for(Cell cell : cellArray) {
+                cell.setupNeighbours(cells);
+            }
+        }
     }
 
     public void onCellSelected(int row, int col){ // Initializing start, end, walls

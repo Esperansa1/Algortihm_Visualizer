@@ -18,16 +18,23 @@ public abstract class SearchAlgorithm  {
             current.setCellType(Cell.CellType.PATH);
         }
         startCell.setCellType(Cell.CellType.START_POINT);
-
     }
 
     public boolean isGoal(Cell current, Cell endCell){
         return current.equals(endCell);
     }
 
-    public void initializeSearch(Cell[][] cells, Cell startCell, Cell endCell) {
-        if(startCell == null || endCell == null) return;
 
+    public void resetAlgorithm(){
+        this.openSet = new ArrayList<>();
+        this.closedSet = new ArrayList<>();
+
+        this.openSet.add(startCell);
+
+        isRunning = true;
+    }
+
+    public void initializeSearch(Cell[][] cells, Cell startCell, Cell endCell) {
         for (Cell[] value : cells) {
             for (Cell cell : value) {
                 Cell.CellType cellType = cell.getCellType();
@@ -36,19 +43,13 @@ public abstract class SearchAlgorithm  {
                 }
             }
         }
-
-        initializeNeighbours(cells);
-        this.openSet = new ArrayList<>();
-        this.closedSet = new ArrayList<>();
-
         this.startCell = startCell;
         this.endCell = endCell;
 
-        this.openSet.add(startCell);
-
-        isRunning = true;
-
+        resetAlgorithm();
     }
+
+
     public void setupCellTypes() {
 
         for(Cell cell : openSet){
@@ -81,15 +82,6 @@ public abstract class SearchAlgorithm  {
 
         return true;
 
-    }
-
-
-    public void initializeNeighbours(Cell[][] cells){
-        for(Cell[] cellArray : cells) {
-            for(Cell cell : cellArray) {
-                cell.setupNeighbours(cells);
-            }
-        }
     }
 
     public abstract void stepSearch();

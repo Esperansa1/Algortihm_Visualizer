@@ -110,16 +110,17 @@ public class Screen extends JFrame {
         setVisible(true);
 
         Cell[][] cells = BoardManager.getInstance().getCells();
-        button1.addActionListener(e -> new Thread(() -> {
-            while (searchManager.isRunning()) {
-                try{
-                    searchManager.stepSearch();
-                    Thread.sleep(1);
+        button1.addActionListener(e ->
+            new Thread(() -> {
+                while (searchManager.isRunning()) {
+                    try{
+                        searchManager.stepSearch();
+                        Thread.sleep(1);
+                    }
+                    catch (InterruptedException exception) {
+                        break;
+                    }
                 }
-                catch (InterruptedException exception) {
-                    break;
-                }
-            }
         }).start());
 
         button2.addActionListener(e ->
@@ -149,7 +150,6 @@ public class Screen extends JFrame {
 
     }
 
-
     private JLabel getLabel(String labelText, int y, int padding){
         JLabel label = new JLabel(labelText);
         int labelWidth = 150;
@@ -165,21 +165,6 @@ public class Screen extends JFrame {
         int buttonAlignment = GRID_WIDTH + (WIDTH - GRID_WIDTH - buttonWidth + padding)/2;
         button.setBounds(buttonAlignment, y, buttonWidth, 40);
         return button;
-    }
-
-
-    private JToggleButton toggleButton(){
-        JToggleButton toggleButton = new JToggleButton("Toggle Switch");
-        toggleButton.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-                // Switch is ON
-                System.out.println("Switch is ON");
-            } else {
-                // Switch is OFF
-                System.out.println("Switch is OFF");
-            }
-        });
-        return toggleButton;
     }
 
     private JSlider getSlider(int y, int padding) {
@@ -215,7 +200,7 @@ public class Screen extends JFrame {
         return slider;
     }
 
-    public void drawWalls(Graphics g, Cell[][] cells) {
+    private void drawWalls(Graphics g, Cell[][] cells) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.BLACK);
 
@@ -240,7 +225,7 @@ public class Screen extends JFrame {
         }
     }
 
-    public void drawCells(Graphics g, Cell[][] cells){
+    private void drawCells(Graphics g, Cell[][] cells){
         Graphics2D g2d = (Graphics2D) g;
 
         int rows = GRID_HEIGHT / Cell.CELL_SIZE;
@@ -256,7 +241,7 @@ public class Screen extends JFrame {
         drawingPanel.repaint();
     }
 
-    public void onMouseClick(int x, int y){
+    private void onMouseClick(int x, int y){
         int row = y / Cell.CELL_SIZE;
         int col = x / Cell.CELL_SIZE;
 
@@ -281,7 +266,7 @@ public class Screen extends JFrame {
 
 
     public static void main(String[] args) {
-        new Screen();
+        SwingUtilities.invokeLater(Screen::new);
     }
 
 

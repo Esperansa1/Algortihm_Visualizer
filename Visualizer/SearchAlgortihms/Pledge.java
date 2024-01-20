@@ -28,7 +28,7 @@ public class Pledge extends SearchAlgorithm {
         if(currentCell.getCellType() != Cell.CellType.START_POINT && currentCell.getCellType() != Cell.CellType.END_POINT){
             currentCell.setCellType(Cell.CellType.CLOSE_SET);
         }
-        if(forward.getCameFrom() == null)
+        if(forward != null && forward.getCameFrom() == null)
             forward.setCameFrom(currentCell);
         currentCell = forward;
 

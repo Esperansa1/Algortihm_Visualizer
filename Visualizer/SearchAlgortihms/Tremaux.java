@@ -14,6 +14,7 @@ public class Tremaux extends SearchAlgorithm {
     public void initializeSearch(Cell[][] cells, Cell startCell, Cell endCell) {
         super.initializeSearch(cells, startCell, endCell);
         currentCell = startCell;
+        System.out.println(currentCell);
         marks = new Stack<>();
         marks.push(startCell);
 
@@ -50,6 +51,7 @@ public class Tremaux extends SearchAlgorithm {
             isRunning = false;
             return;
         }
+        System.out.println(currentCell);
         if (isGoal(endCell, currentCell)) {
             reconstructPath(currentCell);
             isRunning = false;
