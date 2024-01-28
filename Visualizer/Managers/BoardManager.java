@@ -39,19 +39,16 @@ public class BoardManager {
         return cells;
     }
 
-
     public void updateCellsArray(int rows, int cols){ // Maybe instead of making new array, change it so it will only delete the sides
         Cell[][] newCells = new Cell[rows][cols];
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-
-                if(cells != null && i < cells.length && j < cells[0].length)
-                    newCells[i][j] = cells[i][j];
-                else
                     newCells[i][j] = new Cell(i, j);
             }
         }
+        startCell = null;
+        endCell = null;
         this.cells = newCells;
         initializeNeighbours(cells);
 
@@ -82,5 +79,16 @@ public class BoardManager {
         }
         // Later add Weights
     }
+
+    public void onCellDeselect(int row, int col){
+        Cell selected = cells[row][col];
+        selected.setCellType(Cell.CellType.EMPTY);
+        if(selected.equals(startCell))
+            startCell = null;
+        else if(selected.equals(endCell))
+            endCell = null;
+
+    }
+
 
 }

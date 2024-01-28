@@ -2,9 +2,7 @@ package Visualizer.SearchAlgortihms;
 
 import Visualizer.Cell;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Stack;
 
 
 public class Pledge extends SearchAlgorithm {
@@ -16,8 +14,8 @@ public class Pledge extends SearchAlgorithm {
     private int currentDirection;
     private int stepCounter;
 
-    public void initializeSearch(Cell[][] cells, Cell startCell, Cell endCell) {
-        super.initializeSearch(cells,startCell,endCell);
+    public void initializeSearch(Cell[][] cells) {
+        super.initializeSearch(cells);
         this.cells = cells;
 
     }
@@ -46,12 +44,7 @@ public class Pledge extends SearchAlgorithm {
 
     @Override
     public void stepSearch() {
-        if(stepCounter > (cells.length * cells[0].length) * 2){
-            isRunning = false;
-            return;
-        }
-        if (isGoal(endCell, currentCell)) {
-            reconstructPath(currentCell);
+        if(stepCounter > (cells.length * cells[0].length) * 2 || isGoal(endCell, currentCell)){
             isRunning = false;
             return;
         }

@@ -1,6 +1,8 @@
 package Visualizer.SearchAlgortihms;
 
 import Visualizer.Cell;
+import Visualizer.Managers.BoardManager;
+
 import java.util.ArrayList;
 
 public abstract class SearchAlgorithm  {
@@ -44,7 +46,7 @@ public abstract class SearchAlgorithm  {
         isRunning = true;
     }
 
-    public void initializeSearch(Cell[][] cells, Cell startCell, Cell endCell) {
+    public void initializeSearch(Cell[][] cells) {
         for (Cell[] value : cells) {
             for (Cell cell : value) {
                 Cell.CellType cellType = cell.getCellType();
@@ -53,8 +55,10 @@ public abstract class SearchAlgorithm  {
                 }
             }
         }
-        this.startCell = startCell;
-        this.endCell = endCell;
+
+        BoardManager boardManager = BoardManager.getInstance();
+        this.startCell = boardManager.getStartCell();
+        this.endCell = boardManager.getEndCell();
 
         resetAlgorithm();
     }

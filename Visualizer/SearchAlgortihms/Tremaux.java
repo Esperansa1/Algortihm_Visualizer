@@ -2,7 +2,6 @@ package Visualizer.SearchAlgortihms;
 
 import Visualizer.Cell;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -11,8 +10,8 @@ public class Tremaux extends SearchAlgorithm {
     private Stack<Cell> marks;
     private Cell currentCell;
     @Override
-    public void initializeSearch(Cell[][] cells, Cell startCell, Cell endCell) {
-        super.initializeSearch(cells, startCell, endCell);
+    public void initializeSearch(Cell[][] cells) {
+        super.initializeSearch(cells);
         currentCell = startCell;
         marks = new Stack<>();
         marks.push(startCell);
@@ -46,13 +45,7 @@ public class Tremaux extends SearchAlgorithm {
 
     @Override
     public void stepSearch() {
-        if (marks.isEmpty()) {
-            isRunning = false;
-            return;
-        }
-        System.out.println(currentCell);
-        if (isGoal(endCell, currentCell)) {
-            reconstructPath(currentCell);
+        if (marks.isEmpty() || isGoal(endCell, currentCell)) {
             isRunning = false;
             return;
         }

@@ -4,7 +4,6 @@ import Visualizer.Cell;
 import Visualizer.MazeAlgorithms.MazeAlgorithm;
 import Visualizer.MazeAlgorithms.Prims;
 import Visualizer.MazeAlgorithms.SAW;
-import Visualizer.SearchAlgortihms.Pledge;
 
 import java.util.ArrayList;
 

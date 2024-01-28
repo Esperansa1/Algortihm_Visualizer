@@ -22,8 +22,8 @@ public class GreedyBFS extends SearchAlgorithm {
     }
 
     @Override
-    public void initializeSearch(Cell[][] cells, Cell startCell, Cell endCell) {
-        super.initializeSearch(cells, startCell, endCell);
+    public void initializeSearch(Cell[][] cells) {
+        super.initializeSearch(cells);
         initializeCells(cells, startCell, endCell);
     }
 
@@ -57,7 +57,6 @@ public class GreedyBFS extends SearchAlgorithm {
         setupCellTypes();
 
         if (isGoal(endCell, currentCell)) {
-            reconstructPath(currentCell);
             isRunning = false;
             return;
         }

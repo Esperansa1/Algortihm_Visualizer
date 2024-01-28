@@ -7,6 +7,7 @@ import Visualizer.Managers.SearchManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Stack;
 
 public class Screen extends JFrame {
 
@@ -15,13 +16,16 @@ public class Screen extends JFrame {
     public static final int GRID_WIDTH = 800;
     public static final int GRID_HEIGHT = 800;
     private final JPanel drawingPanel;
-
     private boolean isClickHeld;
     private final SearchManager searchManager;
     private final MazeManager mazeManager;
 
+    private boolean isBusy;
+
     public Screen() {
         super("Algorithm Visualizer");
+
+        isBusy = false;
 
         // Set layout to null
         setLayout(null);
@@ -54,11 +58,12 @@ public class Screen extends JFrame {
         int padding = Cell.CELL_SIZE;
         drawingPanel.setBounds(0, 0, GRID_WIDTH + padding, GRID_HEIGHT + padding);
 
+        // Set frame properties
+        setFrameProperties();
+
         // Initialize buttons, labels, and slider
         initializeComponents();
 
-        // Set frame properties
-        setFrameProperties();
 
     }
 
@@ -91,20 +96,36 @@ public class Screen extends JFrame {
 
     // Method to handle mouse press event
     private void handleMousePress(MouseEvent e) {
+
+        if(isBusy) return;
+
+        int x = e.getX();
+        int y = e.getY();
+        
         if (SwingUtilities.isLeftMouseButton(e)) {
             isClickHeld = true;
-            int x = e.getX();
-            int y = e.getY();
-            onMouseClick(x, y);
+            onLeftClick(x, y);
+        }
+        if(SwingUtilities.isRightMouseButton((e))){
+            isClickHeld = true;
+            onRightClick(x, y);
         }
     }
 
     // Method to handle mouse drag event
     private void handleMouseDrag(MouseEvent e) {
+
+        if(isBusy) return;
+
         if (isClickHeld) {
             int x = e.getX();
             int y = e.getY();
-            onMouseClick(x, y);
+            if (SwingUtilities.isLeftMouseButton(e)) {
+                onLeftClick(x, y);
+            }
+            if(SwingUtilities.isRightMouseButton(e)){
+                onRightClick(x, y);
+            }
         }
     }
 
@@ -121,34 +142,13 @@ public class Screen extends JFrame {
         JLabel mazeLabel = getLabel(mazeManager.getCurrentAlgorithmName(), 220, padding);
         JButton nextMazeBtn = getButton("Change Maze", 250, padding);
 
-        JSlider slider = getSlider(310, padding);
+        JLabel sliderLabel = getLabel("Cell size:", 310, padding);
+        JSlider slider = getSlider(350, padding);
 
 
-        startSearchBtn.addActionListener(e ->
-                new Thread(() -> {
-                    Cell[][] cells = BoardManager.getInstance().getCells();
-                    Cell startCell = BoardManager.getInstance().getStartCell();
-                    Cell endCell = BoardManager.getInstance().getEndCell();
-                    searchManager.initializeSearch(cells, startCell, endCell);
+        startSearchBtn.addActionListener(e -> visualizeSearch());
 
-                    while (searchManager.isRunning()) {
-                        try {
-                            searchManager.stepSearch();
-                            Thread.sleep(1);
-                        } catch (InterruptedException exception) {
-                            break;
-                        }
-                    }
-                }).start());
-
-        startMazeBtn.addActionListener(e ->
-                new Thread(() -> {
-                    Cell[][] cells = BoardManager.getInstance().getCells();
-                    mazeManager.initializeMazeGeneration(cells);
-                    while (mazeManager.isRunning()) {
-                        mazeManager.stepMazeGeneration(cells);
-                    }
-                }).start());
+        startMazeBtn.addActionListener(e -> visualizeMaze());
 
         nextSearchBtn.addActionListener(e -> {
             searchManager.nextAlgorithm();
@@ -162,7 +162,6 @@ public class Screen extends JFrame {
 
         // Add components to the content pane
         getContentPane().add(drawingPanel);
-        getContentPane().add(slider);
 
         getContentPane().add(startSearchBtn);
         getContentPane().add(startMazeBtn);
@@ -172,6 +171,9 @@ public class Screen extends JFrame {
 
         getContentPane().add(mazeLabel);
         getContentPane().add(nextMazeBtn);
+
+        getContentPane().add(sliderLabel);
+        getContentPane().add(slider);
     }
 
     // Method to set frame properties
@@ -203,13 +205,23 @@ public class Screen extends JFrame {
     }
 
     private JSlider getSlider(int y, int padding) {
+
         JSlider slider = new JSlider(JSlider.HORIZONTAL, 20, 100, 40);
+
+        Dimension preferredSize = new Dimension(150, slider.getPreferredSize().height);
+        slider.setPreferredSize(preferredSize);
+
         slider.setMajorTickSpacing(20);
         slider.setMinorTickSpacing(20);
         slider.setPaintTicks(true);
         slider.setPaintLabels(true);
 
         slider.addChangeListener(e -> {
+
+            if(isBusy){
+                slider.setValue(Cell.CELL_SIZE);
+                return;
+            }
 
             JSlider source = (JSlider) e.getSource();
 
@@ -226,6 +238,7 @@ public class Screen extends JFrame {
 
                 BoardManager.getInstance().updateCellsArray(rows, cols);
                 drawingPanel.repaint();
+
             }
         });
 
@@ -260,6 +273,47 @@ public class Screen extends JFrame {
         }
     }
 
+    public void drawPath(Graphics g, Cell startCell, Cell endCell){
+
+        new Thread(() -> {
+            Stack<Cell> path = new Stack<>();
+            Cell current = endCell;
+            while (!startCell.equals(current)) {
+                path.push(current);
+                current = current.getCameFrom();
+            }
+            // I use the stack to make it so I will create the path starting from the start cell
+            Cell previous = startCell;
+
+            while (!path.isEmpty()) {
+                current = path.pop();
+                drawLine(g, previous, current);
+                previous = current;
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            isBusy = false;
+        }).start();
+    }
+
+    private void drawLine(Graphics g, Cell c1, Cell c2){
+        Graphics2D g2d = (Graphics2D) g;
+
+        int x1 = (c1.getCol() + 1) * Cell.CELL_SIZE - Cell.CELL_SIZE / 2;
+        int y1 = (c1.getRow() + 1) * Cell.CELL_SIZE - Cell.CELL_SIZE / 2;
+
+        int x2 = (c2.getCol() + 1) * Cell.CELL_SIZE - Cell.CELL_SIZE / 2;
+        int y2 = (c2.getRow() + 1) * Cell.CELL_SIZE - Cell.CELL_SIZE / 2;
+
+        g2d.setColor(CellColors.getCellColor(Cell.CellType.PATH));
+        g2d.setStroke(new BasicStroke(10));
+        g2d.drawLine(x1, y1, x2, y2);
+    };
+
+
     private void drawCells(Graphics g, Cell[][] cells){
         Graphics2D g2d = (Graphics2D) g;
 
@@ -273,10 +327,9 @@ public class Screen extends JFrame {
             }
         }
 
-        drawingPanel.repaint();
     }
 
-    private void onMouseClick(int x, int y){
+    private void onLeftClick(int x, int y){
         int row = y / Cell.CELL_SIZE;
         int col = x / Cell.CELL_SIZE;
 
@@ -288,8 +341,61 @@ public class Screen extends JFrame {
         BoardManager.getInstance().onCellSelected(row,col);
 
         drawingPanel.repaint();
-
     }
+    
+    private void onRightClick(int x, int y){
+        int row = y / Cell.CELL_SIZE;
+        int col = x / Cell.CELL_SIZE;
+
+        int max_rows = GRID_HEIGHT / Cell.CELL_SIZE;
+        int max_cols = GRID_WIDTH / Cell.CELL_SIZE;
+
+        if(max_rows <= row || max_cols <= col) return;
+
+        BoardManager.getInstance().onCellDeselect(row, col);
+
+        drawingPanel.repaint();
+    }
+
+    private void visualizeSearch(){
+
+        new Thread(() -> {
+            BoardManager manager = BoardManager.getInstance();
+            if(manager.getStartCell() == null || manager.getEndCell() == null) return;
+
+            Cell[][] cells = manager.getCells();
+            searchManager.initializeSearch(cells);
+
+            isBusy = true;
+
+            while (searchManager.isRunning()) {
+                try {
+                    searchManager.stepSearch();
+                    drawingPanel.repaint();
+                    Thread.sleep(1);
+                } catch (InterruptedException exception) {
+                    break;
+                }
+            }
+            drawPath(drawingPanel.getGraphics(), BoardManager.getInstance().getStartCell(), BoardManager.getInstance().getEndCell());
+        }).start();
+    }
+
+    private void visualizeMaze(){
+        new Thread(() -> {
+            if(isBusy) return;
+            isBusy = true;
+            Cell[][] cells = BoardManager.getInstance().getCells();
+            mazeManager.initializeMazeGeneration(cells);
+            while (mazeManager.isRunning()) {
+                mazeManager.stepMazeGeneration(cells);
+                drawingPanel.repaint();
+            }
+            isBusy = false;
+        }).start();
+    }
+
+
 
 
     public static void main(String[] args) {
@@ -301,8 +407,12 @@ public class Screen extends JFrame {
 
 class CellColors {
     public static Color getCellColor(Cell cell){
+        return getCellColor(cell.getCellType());
+    }
 
-        return switch (cell.getCellType()) {
+    public static Color getCellColor(Cell.CellType type){
+
+        return switch (type) {
             case EMPTY -> Color.WHITE;
             case WALL -> Color.GRAY;
             case PATH -> Color.MAGENTA;

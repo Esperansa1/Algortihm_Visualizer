@@ -17,14 +17,13 @@ public class SearchManager {
     public SearchManager() {
         searchAlgorithm = new ArrayList<>();
 
+        searchAlgorithm.add(new AStar());
         searchAlgorithm.add(new Tremaux());
         searchAlgorithm.add(new Pledge());
         searchAlgorithm.add(new GreedyBFS());
-        searchAlgorithm.add(new AStar());
     }
 
     public boolean isRunning(){
-        System.out.println(getCurrentAlgorithm().isRunning);
         return getCurrentAlgorithm().isRunning;
     }
     private SearchAlgorithm getCurrentAlgorithm()
@@ -40,8 +39,8 @@ public class SearchManager {
     public void stepSearch(){
         getCurrentAlgorithm().stepSearch();
     }
-    public void initializeSearch(Cell[][] cells, Cell startCell, Cell endCell){
-        getCurrentAlgorithm().initializeSearch(cells, startCell, endCell);
+    public void initializeSearch(Cell[][] cells){
+        getCurrentAlgorithm().initializeSearch(cells);
     }
 
     public void nextAlgorithm(){

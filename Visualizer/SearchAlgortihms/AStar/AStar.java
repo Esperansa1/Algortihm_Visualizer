@@ -11,6 +11,7 @@ public class AStar extends SearchAlgorithm {
     private void initializeCells(Cell[][] starting_cells, Cell startCell, Cell endCell){
         cellMap = new HashMap<>();
 
+
         for(Cell[] cellArray : starting_cells){
             for(Cell cell : cellArray){
                 double distance = cell.euclideanDist(endCell);
@@ -21,8 +22,8 @@ public class AStar extends SearchAlgorithm {
     }
 
     @Override
-    public void initializeSearch(Cell[][] cells, Cell startCell, Cell endCell) {
-        super.initializeSearch(cells, startCell, endCell);
+    public void initializeSearch(Cell[][] cells) {
+        super.initializeSearch(cells);
         initializeCells(cells, startCell, endCell);
     }
 
@@ -55,7 +56,7 @@ public class AStar extends SearchAlgorithm {
         setupCellTypes();
 
         if (isGoal(endCell, currentCell)) {
-            reconstructPath(currentCell);
+//            reconstructPath(currentCell);
             isRunning = false;
             return;
         }
@@ -77,7 +78,6 @@ public class AStar extends SearchAlgorithm {
             cellMap.get(neighbour).f = tentativeGScore +  cellMap.get(neighbour).h;
 
         }
-        reconstructPath(currentCell);
     }
 
     @Override
