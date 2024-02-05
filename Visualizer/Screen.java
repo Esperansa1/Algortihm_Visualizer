@@ -5,9 +5,10 @@ import Visualizer.Managers.MazeManager;
 import Visualizer.Managers.SearchManager;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Stack;
+import java.util.*;
 
 public class Screen extends JFrame {
 
@@ -63,7 +64,6 @@ public class Screen extends JFrame {
 
         // Initialize buttons, labels, and slider
         initializeComponents();
-
 
     }
 
@@ -131,8 +131,7 @@ public class Screen extends JFrame {
 
     // Method to initialize buttons, labels, and slider
     private void initializeComponents() {
-        int padding = Cell.CELL_SIZE;
-
+        int padding = 40;
         JButton startSearchBtn = getButton("Start Pathfinding", 50, padding);
         JButton startMazeBtn = getButton("Generate Maze", 100, padding);
 
@@ -145,11 +144,20 @@ public class Screen extends JFrame {
         JLabel sliderLabel = getLabel("Cell size:", 310, padding);
         JSlider slider = getSlider(350, padding);
 
+        JLabel madeByLabel = getLabel("Made By: Or Esperansa", HEIGHT - 50, padding);
+
+        JButton userManualBtn = getButton("User Manual", HEIGHT - 100, padding);
+
+        JButton colorPickerBtn = getButton("Color picker", HEIGHT - 150, padding);
+
+
+        userManualBtn.addActionListener(e -> userManual());
+
+        colorPickerBtn.addActionListener(e -> colorPicker());
 
         startSearchBtn.addActionListener(e -> visualizeSearch());
 
         startMazeBtn.addActionListener(e -> visualizeMaze());
-
         nextSearchBtn.addActionListener(e -> {
             searchManager.nextAlgorithm();
             pathfindingLabel.setText(searchManager.getCurrentAlgorithmName());
@@ -174,7 +182,78 @@ public class Screen extends JFrame {
 
         getContentPane().add(sliderLabel);
         getContentPane().add(slider);
+
+        getContentPane().add(userManualBtn);
+        getContentPane().add(colorPickerBtn);
+
+        getContentPane().add(madeByLabel);
+
+
+
     }
+
+    private void userManual() {
+        JDialog popup = new JDialog(this, "User Manual", true);
+
+        JPanel panel = new JPanel();
+        JLabel instructionsLabel = new JLabel("<html><div style='text-align: center;'>" +
+                "Welcome to the Pathfinding / Maze Generation project!<br/><br/>" +
+                "<p style='margin-bottom: 10px;'><b>Pathfinding Instructions:</b><br/>" +
+                "1. <b>Starting Pathfinding:</b> to initiate pathfinding, press the \"Start Pathfinding\" button.</p>" +
+                "<p style='margin-bottom: 10px;'><b>2. Selecting a Pathfinding Algorithm:</b> Click \"Change Pathfinding Algorithm\"<br/>Choose from A*, GreedyBFS, Pledge's Algorithm, Tremaux's Algorithm.</p><br/>" +
+                "<b>Maze Generation Instructions:</b><br/>" +
+                "1. <b>Generating a Maze:</b> to generate a maze, click on the \"Start Maze Generation\" button.</p>" +
+                "<p style='margin-bottom: 10px;'><b>2. Selecting a Maze Generation Algorithm:</b> Press \"Change Maze Generation Algorithm\"<br/>Choose from Prim's Algorithm, Self-Avoiding Walk.</p><br/>" +
+                "Thank you for using the application!</div></html>"
+        );
+
+        instructionsLabel.setBorder(new EmptyBorder(20, 10, 20, 10));
+        panel.add(instructionsLabel);
+
+        popup.getContentPane().add(panel);
+        popup.pack();
+
+        popup.setLocationRelativeTo(this);
+        popup.setResizable(false);
+        popup.setVisible(true);
+    }
+
+//    private JButton getButton(String buttonText, int y, int padding){
+
+
+    private void colorPicker(){
+
+        JDialog popup = new JDialog(this, "Color picker", true);
+
+        JPanel panel = new JPanel();
+        popup.setSize(400,200);
+        panel.setSize(400,200);
+
+
+        Cell.CellType[] types = Cell.CellType.values();
+
+        for(int i = 0; i < types.length; i++){
+
+            // Formatting the string for first letter to be capitalized and rest not
+            String[] splitString = types[i].toString().split("_");
+            String type = String.join(" ", splitString);
+            String finalType = type.substring(0,1).toUpperCase() + type.substring(1);
+
+            JButton button = getButton(finalType, i * 50, 60);
+
+            int finalI = i;
+            button.addActionListener(e -> openColorPicker(types[finalI]));
+
+            panel.add(button);
+        }
+
+        popup.add(panel);
+        popup.setLocationRelativeTo(this);
+        popup.setResizable(false);
+        popup.setVisible(true);
+    }
+
+
 
     // Method to set frame properties
     private void setFrameProperties() {
@@ -278,18 +357,26 @@ public class Screen extends JFrame {
         new Thread(() -> {
             Stack<Cell> path = new Stack<>();
             Cell current = endCell;
+
+            if(current.getCameFrom() == null) {
+                isBusy = false;
+                return;
+            }
+
             while (!startCell.equals(current)) {
                 path.push(current);
                 current = current.getCameFrom();
             }
+
             // I use the stack to make it so I will create the path starting from the start cell
+            path.push(startCell);
             Cell previous = startCell;
 
             while (!path.isEmpty()) {
-                current = path.pop();
-                drawLine(g, previous, current);
-                previous = current;
                 try {
+                    current = path.pop();
+                    drawLine(g, previous, current);
+                    previous = current;
                     Thread.sleep(20);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
@@ -395,6 +482,17 @@ public class Screen extends JFrame {
         }).start();
     }
 
+    private void openColorPicker(Cell.CellType typeToChange){
+        Color chosenColor = JColorChooser.showDialog(null, "Pick a color", CellColors.getCellColor(typeToChange));
+        System.out.println(chosenColor);
+        CellColors.changeColor(typeToChange, chosenColor);
+        System.out.println("Type: "+typeToChange + " Color: "+CellColors.getCellColor(typeToChange));
+        drawingPanel.repaint();
+
+
+
+    }
+
 
 
 
@@ -406,20 +504,28 @@ public class Screen extends JFrame {
 }
 
 class CellColors {
-    public static Color getCellColor(Cell cell){
+
+    private static final Map<Cell.CellType, Color> cellColorMap = new HashMap<>();
+
+    static {
+        cellColorMap.put(Cell.CellType.EMPTY, Color.WHITE);
+        cellColorMap.put(Cell.CellType.WALL, Color.GRAY);
+        cellColorMap.put(Cell.CellType.PATH, Color.MAGENTA);
+        cellColorMap.put(Cell.CellType.OPEN_SET, Color.GREEN);
+        cellColorMap.put(Cell.CellType.CLOSE_SET, Color.RED);
+        cellColorMap.put(Cell.CellType.END_POINT, Color.YELLOW);
+        cellColorMap.put(Cell.CellType.START_POINT, Color.YELLOW);
+        cellColorMap.put(Cell.CellType.HIGHLIGHT, Color.PINK);
+    }
+
+    public static Color getCellColor(Cell cell) {
         return getCellColor(cell.getCellType());
     }
 
-    public static Color getCellColor(Cell.CellType type){
-
-        return switch (type) {
-            case EMPTY -> Color.WHITE;
-            case WALL -> Color.GRAY;
-            case PATH -> Color.MAGENTA;
-            case OPEN_SET -> Color.GREEN;
-            case CLOSE_SET -> Color.RED;
-            case END_POINT, START_POINT -> Color.YELLOW;
-            case HIGHLIGHT -> Color.PINK;
-        };
+    public static Color getCellColor(Cell.CellType type) {
+        return cellColorMap.get(type);
     }
+
+    public static void changeColor(Cell.CellType type, Color color){ cellColorMap.put(type, color); }
+
 }

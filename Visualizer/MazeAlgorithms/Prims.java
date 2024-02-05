@@ -1,8 +1,11 @@
 package Visualizer.MazeAlgorithms;
 
 import Visualizer.Cell;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 public class Prims extends MazeAlgorithm {
 
@@ -39,18 +42,22 @@ public class Prims extends MazeAlgorithm {
             return;
         }
 
-        closedSet.add(current);
+        ArrayList<Cell> neighbours = getUnvisitedNeighbours();
 
-        for(Cell neighbour : current.getNeighbours()){
-            if(!closedSet.contains(neighbour)){
-                closedSet.add(neighbour);
-                current.removeWall(neighbour);
-                uncheckedNeighbours.add(neighbour);
-                highlight(neighbour);
-
-            }
+        uncheckedNeighbours.addAll(neighbours);
+        if(!neighbours.isEmpty()) {
+            Cell neighbour = current.getNeighbours().get((int)(Math.random() * current.getNeighbours().size()));
+            closedSet.add(neighbour);
+            current.removeWall(neighbour);
+            highlight(neighbour);
         }
         current = popRandomUncheckedCell();
+    }
+
+    private ArrayList<Cell> getUnvisitedNeighbours(){
+        ArrayList<Cell> neighbours = current.getNeighbours();
+        neighbours = neighbours.stream().filter(o -> !closedSet.contains(o)).collect(Collectors.toCollection(ArrayList::new));
+        return neighbours;
     }
 
     private void highlight(Cell current){
@@ -62,7 +69,7 @@ public class Prims extends MazeAlgorithm {
         previous = current;
     }
 
-    public Cell popRandomUncheckedCell(){
+    private Cell popRandomUncheckedCell(){
         int index = (int)(Math.random() * uncheckedNeighbours.size());
         return uncheckedNeighbours.remove(index);
     }
