@@ -6,8 +6,8 @@ import java.util.ArrayList;
 public class Cell {
     public enum CellType {EMPTY, WALL, PATH, OPEN_SET, CLOSE_SET, START_POINT, END_POINT, HIGHLIGHT}
                             // TOP  RIGHT BOTTOM LEFT
-    private boolean[] walls = {true, true, true, true};
-//    private boolean[] walls = {false, false, false, false};
+//    private boolean[] walls = {true, true, true, true};
+    private boolean[] walls = {false, false, false, false};
 
     public static int CELL_SIZE = 40;
 
@@ -41,26 +41,35 @@ public class Cell {
     }
 
     public void removeWall(Cell other){
+        changeWallState(other, false);
+    }
+
+    public void addWall(Cell other){
+        changeWallState(other, true);
+    }
+
+    public void changeWallState(Cell other, boolean state){
         int x = col - other.col;
 
         if (x == 1) {
-            walls[3] = false;
-            other.walls[1] = false;
+            walls[3] = state;
+            other.walls[1] = state;
         } else if (x == -1) {
-            walls[1] = false;
-            other.walls[3] = false;
+            walls[1] = state;
+            other.walls[3] = state;
         }
 
         int y = row - other.row;
 
         if (y == 1) {
-            walls[0] = false;
-            other.walls[2] = false;
+            walls[0] = state;
+            other.walls[2] = state;
         } else if (y == -1) {
-            walls[2] = false;
-            other.walls[0] = false;
+            walls[2] = state;
+            other.walls[0] = state;
         }
     }
+
 
     private int[] getDistances(Cell otherCell) {
         int dx = Math.abs(getCol() - otherCell.getCol());

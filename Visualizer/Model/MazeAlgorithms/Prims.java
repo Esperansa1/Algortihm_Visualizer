@@ -1,8 +1,7 @@
-package Visualizer.MazeAlgorithms;
+package Visualizer.Model.MazeAlgorithms;
 
 import Visualizer.Cell;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.stream.Collectors;

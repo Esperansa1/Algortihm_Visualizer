@@ -1,13 +1,14 @@
-package Visualizer.Managers;
+package Visualizer.Model;
 
 import Visualizer.Cell;
-import Visualizer.MazeAlgorithms.MazeAlgorithm;
-import Visualizer.MazeAlgorithms.Prims;
-import Visualizer.MazeAlgorithms.SAW;
+import Visualizer.Model.MazeAlgorithms.MazeAlgorithm;
+import Visualizer.Model.MazeAlgorithms.Prims;
+import Visualizer.Model.MazeAlgorithms.SAW;
+import Visualizer.Observable;
 
 import java.util.ArrayList;
 
-public class MazeManager {
+public class MazeManager extends Observable {
     private final ArrayList<MazeAlgorithm> mazeAlgorithm;
     private int currentAlgorithmIndex;
 
@@ -27,6 +28,7 @@ public class MazeManager {
 
     public void stepMazeGeneration(Cell[][] cells){
         getCurrentAlgorithm().stepMazeGeneration(cells);
+        notifyObservers();
     }
 
     public void initializeMazeGeneration(Cell[][] cells){

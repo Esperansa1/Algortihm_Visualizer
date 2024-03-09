@@ -1,16 +1,17 @@
-package Visualizer.Managers;
+package Visualizer.Model;
 
 import Visualizer.Cell;
-import Visualizer.SearchAlgortihms.AStar.AStar;
+import Visualizer.Observable;
+import Visualizer.Model.SearchAlgortihms.AStar.AStar;
 
-import Visualizer.SearchAlgortihms.GreedyBFS;
-import Visualizer.SearchAlgortihms.Pledge;
-import Visualizer.SearchAlgortihms.SearchAlgorithm;
-import Visualizer.SearchAlgortihms.Tremaux;
+import Visualizer.Model.SearchAlgortihms.GreedyBFS;
+import Visualizer.Model.SearchAlgortihms.Pledge;
+import Visualizer.Model.SearchAlgortihms.SearchAlgorithm;
+import Visualizer.Model.SearchAlgortihms.Tremaux;
 
 import java.util.ArrayList;
 
-public class SearchManager {
+public class SearchManager extends Observable {
     private final ArrayList<SearchAlgorithm> searchAlgorithm;
     private int currentAlgorithmIndex;
 
@@ -38,6 +39,7 @@ public class SearchManager {
 
     public void stepSearch(){
         getCurrentAlgorithm().stepSearch();
+        notifyObservers();
     }
     public void initializeSearch(Cell[][] cells){
         getCurrentAlgorithm().initializeSearch(cells);

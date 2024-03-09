@@ -1,4 +1,4 @@
-package Visualizer.SearchAlgortihms.AStar;
+package Visualizer.Model.SearchAlgortihms.AStar;
 
 public class AStarCell{
 

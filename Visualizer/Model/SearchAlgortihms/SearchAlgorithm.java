@@ -1,7 +1,8 @@
-package Visualizer.SearchAlgortihms;
+package Visualizer.Model.SearchAlgortihms;
 
 import Visualizer.Cell;
-import Visualizer.Managers.BoardManager;
+import Visualizer.Controller;
+import Visualizer.Model.BoardModel;
 
 import java.util.ArrayList;
 
@@ -11,15 +12,6 @@ public abstract class SearchAlgorithm  {
     protected ArrayList<Cell> closedSet;
     protected Cell startCell, endCell;
 
-
-    public void reconstructPath(Cell currentCell){
-        Cell current = currentCell;
-        while(!current.equals(startCell)){
-            current = current.getCameFrom();
-            current.setCellType(Cell.CellType.PATH);
-        }
-        startCell.setCellType(Cell.CellType.START_POINT);
-    }
 
     public boolean isGoal(Cell current, Cell endCell){
         return current.equals(endCell);
@@ -56,11 +48,12 @@ public abstract class SearchAlgorithm  {
             }
         }
 
-        BoardManager boardManager = BoardManager.getInstance();
+        BoardModel boardManager = Controller.getInstance();
         this.startCell = boardManager.getStartCell();
         this.endCell = boardManager.getEndCell();
 
         resetAlgorithm();
+
     }
 
 

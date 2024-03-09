@@ -1,69 +1,70 @@
-package Visualizer;
+package Visualizer.View;
 
-import Visualizer.Managers.BoardManager;
-import Visualizer.Managers.MazeManager;
-import Visualizer.Managers.SearchManager;
+import Visualizer.BoardObserver;
+import Visualizer.Cell;
+import Visualizer.Controller;
+import Visualizer.Graph;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
+import java.util.Stack;
 
-public class Screen extends JFrame {
+public class Screen extends JFrame implements BoardObserver {
 
     public static final int WIDTH = 1000;
     public static final int HEIGHT = 800;
     public static final int GRID_WIDTH = 800;
     public static final int GRID_HEIGHT = 800;
+
     private final JPanel drawingPanel;
     private boolean isClickHeld;
-    private final SearchManager searchManager;
-    private final MazeManager mazeManager;
+    private final Controller controller;
 
-    private boolean isBusy;
 
-    public Screen() {
+    public Screen(Controller controller) {
         super("Algorithm Visualizer");
 
-        isBusy = false;
+        this.controller = controller;
+        controller.subscribeToModel(this);
 
-        // Set layout to null
         setLayout(null);
 
-        // Initialize managers
-        searchManager = new SearchManager();
-        mazeManager = new MazeManager();
-
-        // Get instance of BoardManager
-        BoardManager boardManager = BoardManager.getInstance();
-
-        // Initialize drawing panel
         drawingPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                Cell[][] cells = boardManager.getCells();
+                Cell[][] cells = controller.getModel().getCells();
                 drawCells(g, cells);
+                drawGrid(g);
                 drawWalls(g, cells);
+
             }
         };
 
-        // Set click held flag to false
         isClickHeld = false;
-
-        // Add mouse listeners for handling clicks and drags
         addMouseListeners();
 
-        // Set bounds for drawing panel
         int padding = Cell.CELL_SIZE;
         drawingPanel.setBounds(0, 0, GRID_WIDTH + padding, GRID_HEIGHT + padding);
 
-        // Set frame properties
         setFrameProperties();
+        initializeComponents(controller);
 
-        // Initialize buttons, labels, and slider
-        initializeComponents();
+    }
+
+    private void drawGrid(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+        g.setColor(Color.LIGHT_GRAY);
+        for(int i = 0; i < GRID_WIDTH + Cell.CELL_SIZE; i += Cell.CELL_SIZE){
+            g2d.drawLine(0, i, GRID_WIDTH, i);
+        }
+
+        for(int i = 0; i < GRID_HEIGHT + Cell.CELL_SIZE; i += Cell.CELL_SIZE){
+            g2d.drawLine(i, 0, i, GRID_HEIGHT);
+        }
+
 
     }
 
@@ -97,8 +98,6 @@ public class Screen extends JFrame {
     // Method to handle mouse press event
     private void handleMousePress(MouseEvent e) {
 
-        if(isBusy) return;
-
         int x = e.getX();
         int y = e.getY();
         
@@ -115,8 +114,6 @@ public class Screen extends JFrame {
     // Method to handle mouse drag event
     private void handleMouseDrag(MouseEvent e) {
 
-        if(isBusy) return;
-
         if (isClickHeld) {
             int x = e.getX();
             int y = e.getY();
@@ -130,15 +127,15 @@ public class Screen extends JFrame {
     }
 
     // Method to initialize buttons, labels, and slider
-    private void initializeComponents() {
+    private void initializeComponents(Controller controller) {
         int padding = 40;
         JButton startSearchBtn = getButton("Start Pathfinding", 50, padding);
         JButton startMazeBtn = getButton("Generate Maze", 100, padding);
 
-        JLabel pathfindingLabel = getLabel(searchManager.getCurrentAlgorithmName(), 150, padding);
+        JLabel pathfindingLabel = getLabel(controller.getCurrentPathfindingAlgorithmName(), 150, padding);
         JButton nextSearchBtn = getButton("Change Pathfinding", 180, padding);
 
-        JLabel mazeLabel = getLabel(mazeManager.getCurrentAlgorithmName(), 220, padding);
+        JLabel mazeLabel = getLabel(controller.getCurrentMazeAlgorithmName(), 220, padding);
         JButton nextMazeBtn = getButton("Change Maze", 250, padding);
 
         JLabel sliderLabel = getLabel("Cell size:", 310, padding);
@@ -155,17 +152,17 @@ public class Screen extends JFrame {
 
         colorPickerBtn.addActionListener(e -> colorPicker());
 
-        startSearchBtn.addActionListener(e -> visualizeSearch());
+        startSearchBtn.addActionListener(e -> controller.visualizeSearch());
 
-        startMazeBtn.addActionListener(e -> visualizeMaze());
+        startMazeBtn.addActionListener(e -> controller.visualizeMaze());
         nextSearchBtn.addActionListener(e -> {
-            searchManager.nextAlgorithm();
-            pathfindingLabel.setText(searchManager.getCurrentAlgorithmName());
+            controller.nextPathfindingAlgorithm();
+            pathfindingLabel.setText(controller.getCurrentPathfindingAlgorithmName());
         });
 
         nextMazeBtn.addActionListener(e -> {
-            mazeManager.nextAlgorithm();
-            mazeLabel.setText(mazeManager.getCurrentAlgorithmName());
+            controller.nextMazeAlgorithm();
+            mazeLabel.setText(controller.getCurrentMazeAlgorithmName());
         });
 
         // Add components to the content pane
@@ -217,8 +214,6 @@ public class Screen extends JFrame {
         popup.setResizable(false);
         popup.setVisible(true);
     }
-
-//    private JButton getButton(String buttonText, int y, int padding){
 
 
     private void colorPicker(){
@@ -297,27 +292,16 @@ public class Screen extends JFrame {
 
         slider.addChangeListener(e -> {
 
-            if(isBusy){
+            JSlider source = (JSlider) e.getSource();
+            int value = source.getValue();
+
+            if(controller.isBusy()){
                 slider.setValue(Cell.CELL_SIZE);
                 return;
             }
 
-            JSlider source = (JSlider) e.getSource();
-
-            int value = source.getValue();
             if(GRID_WIDTH % value == 0 && GRID_HEIGHT % value == 0) {
-                Cell.CELL_SIZE = source.getValue();
-
-                int rows = GRID_HEIGHT / Cell.CELL_SIZE;
-                int cols = GRID_WIDTH / Cell.CELL_SIZE;
-
-                Cell[][] cells = BoardManager.getInstance().getCells();
-
-                if(cells.length == rows && cells[0].length == cols) return;
-
-                BoardManager.getInstance().updateCellsArray(rows, cols);
-                drawingPanel.repaint();
-
+                controller.updateCellsArray(source.getValue());
             }
         });
 
@@ -352,14 +336,30 @@ public class Screen extends JFrame {
         }
     }
 
-    public void drawPath(Graphics g, Cell startCell, Cell endCell){
+    private void drawLine(Graphics g, Cell c1, Cell c2){
+        Graphics2D g2d = (Graphics2D) g;
 
+        int x1 = (c1.getCol() + 1) * Cell.CELL_SIZE - Cell.CELL_SIZE / 2;
+        int y1 = (c1.getRow() + 1) * Cell.CELL_SIZE - Cell.CELL_SIZE / 2;
+
+        int x2 = (c2.getCol() + 1) * Cell.CELL_SIZE - Cell.CELL_SIZE / 2;
+        int y2 = (c2.getRow() + 1) * Cell.CELL_SIZE - Cell.CELL_SIZE / 2;
+
+        g2d.setColor(CellColors.getCellColor(Cell.CellType.PATH));
+        g2d.setStroke(new BasicStroke(10));
+        g2d.drawLine(x1, y1, x2, y2);
+    }
+
+    public void drawPath(Cell startCell, Cell endCell){
+
+        Graphics g = drawingPanel.getGraphics();
         new Thread(() -> {
+            controller.setBusy(true);
             Stack<Cell> path = new Stack<>();
             Cell current = endCell;
 
             if(current.getCameFrom() == null) {
-                isBusy = false;
+                controller.setBusy(false);
                 return;
             }
 
@@ -382,23 +382,9 @@ public class Screen extends JFrame {
                     throw new RuntimeException(e);
                 }
             }
-            isBusy = false;
+            controller.setBusy(false);
         }).start();
     }
-
-    private void drawLine(Graphics g, Cell c1, Cell c2){
-        Graphics2D g2d = (Graphics2D) g;
-
-        int x1 = (c1.getCol() + 1) * Cell.CELL_SIZE - Cell.CELL_SIZE / 2;
-        int y1 = (c1.getRow() + 1) * Cell.CELL_SIZE - Cell.CELL_SIZE / 2;
-
-        int x2 = (c2.getCol() + 1) * Cell.CELL_SIZE - Cell.CELL_SIZE / 2;
-        int y2 = (c2.getRow() + 1) * Cell.CELL_SIZE - Cell.CELL_SIZE / 2;
-
-        g2d.setColor(CellColors.getCellColor(Cell.CellType.PATH));
-        g2d.setStroke(new BasicStroke(10));
-        g2d.drawLine(x1, y1, x2, y2);
-    };
 
 
     private void drawCells(Graphics g, Cell[][] cells){
@@ -413,7 +399,6 @@ public class Screen extends JFrame {
                 g2d.fillRect(j * Cell.CELL_SIZE, i * Cell.CELL_SIZE, Cell.CELL_SIZE, Cell.CELL_SIZE);
             }
         }
-
     }
 
     private void onLeftClick(int x, int y){
@@ -425,9 +410,7 @@ public class Screen extends JFrame {
 
         if(max_rows <= row || max_cols <= col) return;
 
-        BoardManager.getInstance().onCellSelected(row,col);
-
-        drawingPanel.repaint();
+        controller.onCellSelected(row,col);
     }
     
     private void onRightClick(int x, int y){
@@ -439,93 +422,21 @@ public class Screen extends JFrame {
 
         if(max_rows <= row || max_cols <= col) return;
 
-        BoardManager.getInstance().onCellDeselect(row, col);
-
-        drawingPanel.repaint();
-    }
-
-    private void visualizeSearch(){
-
-        new Thread(() -> {
-            BoardManager manager = BoardManager.getInstance();
-            if(manager.getStartCell() == null || manager.getEndCell() == null) return;
-
-            Cell[][] cells = manager.getCells();
-            searchManager.initializeSearch(cells);
-
-            isBusy = true;
-
-            while (searchManager.isRunning()) {
-                try {
-                    searchManager.stepSearch();
-                    drawingPanel.repaint();
-                    Thread.sleep(1);
-                } catch (InterruptedException exception) {
-                    break;
-                }
-            }
-            drawPath(drawingPanel.getGraphics(), BoardManager.getInstance().getStartCell(), BoardManager.getInstance().getEndCell());
-        }).start();
-    }
-
-    private void visualizeMaze(){
-        new Thread(() -> {
-            if(isBusy) return;
-            isBusy = true;
-            Cell[][] cells = BoardManager.getInstance().getCells();
-            mazeManager.initializeMazeGeneration(cells);
-            while (mazeManager.isRunning()) {
-                mazeManager.stepMazeGeneration(cells);
-                drawingPanel.repaint();
-            }
-            isBusy = false;
-        }).start();
+        controller.onCellDeselect(row, col);
     }
 
     private void openColorPicker(Cell.CellType typeToChange){
         Color chosenColor = JColorChooser.showDialog(null, "Pick a color", CellColors.getCellColor(typeToChange));
-        System.out.println(chosenColor);
         CellColors.changeColor(typeToChange, chosenColor);
-        System.out.println("Type: "+typeToChange + " Color: "+CellColors.getCellColor(typeToChange));
         drawingPanel.repaint();
 
 
-
     }
 
-
-
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(Screen::new);
+    @Override
+    public void onBoardChanged() {
+        drawingPanel.repaint();
     }
-
 
 }
 
-class CellColors {
-
-    private static final Map<Cell.CellType, Color> cellColorMap = new HashMap<>();
-
-    static {
-        cellColorMap.put(Cell.CellType.EMPTY, Color.WHITE);
-        cellColorMap.put(Cell.CellType.WALL, Color.GRAY);
-        cellColorMap.put(Cell.CellType.PATH, Color.MAGENTA);
-        cellColorMap.put(Cell.CellType.OPEN_SET, Color.GREEN);
-        cellColorMap.put(Cell.CellType.CLOSE_SET, Color.RED);
-        cellColorMap.put(Cell.CellType.END_POINT, Color.YELLOW);
-        cellColorMap.put(Cell.CellType.START_POINT, Color.YELLOW);
-        cellColorMap.put(Cell.CellType.HIGHLIGHT, Color.PINK);
-    }
-
-    public static Color getCellColor(Cell cell) {
-        return getCellColor(cell.getCellType());
-    }
-
-    public static Color getCellColor(Cell.CellType type) {
-        return cellColorMap.get(type);
-    }
-
-    public static void changeColor(Cell.CellType type, Color color){ cellColorMap.put(type, color); }
-
-}

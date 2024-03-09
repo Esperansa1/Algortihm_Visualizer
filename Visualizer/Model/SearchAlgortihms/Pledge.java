@@ -1,13 +1,17 @@
-package Visualizer.SearchAlgortihms;
+package Visualizer.Model.SearchAlgortihms;
 
 import Visualizer.Cell;
+import com.sun.source.doctree.SerialTree;
 
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class Pledge extends SearchAlgorithm {
 
     private static final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
+
+    private Set<Cell> visitedCells;
 
     private Cell[][] cells;
     private Cell currentCell;
@@ -17,7 +21,6 @@ public class Pledge extends SearchAlgorithm {
     public void initializeSearch(Cell[][] cells) {
         super.initializeSearch(cells);
         this.cells = cells;
-
     }
 
     @Override
@@ -26,34 +29,42 @@ public class Pledge extends SearchAlgorithm {
         currentDirection = RIGHT;
         currentCell = startCell;
         stepCounter = 0;
+        visitedCells = new HashSet<>();
 
     }
 
-    private void moveForward(){
+    private void moveForward() {
         Cell forward = getForward();
-        if(currentCell.getCellType() != Cell.CellType.START_POINT && currentCell.getCellType() != Cell.CellType.END_POINT){
+        if (currentCell.getCellType() != Cell.CellType.START_POINT && currentCell.getCellType() != Cell.CellType.END_POINT) {
             currentCell.setCellType(Cell.CellType.CLOSE_SET);
             closedSet.add(currentCell);
         }
-        if(forward != null && forward.getCameFrom() == null)
+        if (forward != null && forward.getCameFrom() == null)
             forward.setCameFrom(currentCell);
         currentCell = forward;
         stepCounter++;
-
+        visitedCells.add(currentCell);
     }
 
     @Override
     public void stepSearch() {
-        if(stepCounter > (cells.length * cells[0].length) * 2 || isGoal(endCell, currentCell)){
+        if (isGoal(endCell, currentCell)) {
             isRunning = false;
             return;
         }
-        if(isRightClear()) {
+
+        if (visitedCells.size() == cells.length * cells[0].length) {
+            // All reachable cells have been explored, but the goal was not found
+            isRunning = false;
+            return;
+        }
+
+        if (isRightClear()) {
             turnRight();
             moveForward();
-        }else if(noWallOnForward()){
+        } else if (noWallOnForward()) {
             moveForward();
-        }else{
+        } else {
             turnLeft();
         }
     }

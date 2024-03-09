@@ -1,4 +1,4 @@
-package Visualizer.SearchAlgortihms;
+package Visualizer.Model.SearchAlgortihms;
 
 import Visualizer.Cell;
 

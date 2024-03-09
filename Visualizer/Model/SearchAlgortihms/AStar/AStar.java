@@ -1,24 +1,24 @@
-package Visualizer.SearchAlgortihms;
+package Visualizer.Model.SearchAlgortihms.AStar;
 
 import Visualizer.Cell;
+import Visualizer.Model.SearchAlgortihms.SearchAlgorithm;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-public class GreedyBFS extends SearchAlgorithm {
-
-    private Map<Cell, Double> cellMap;
+public class AStar extends SearchAlgorithm {
+    private Map<Cell, AStarCell> cellMap;
 
     private void initializeCells(Cell[][] starting_cells, Cell startCell, Cell endCell){
         cellMap = new HashMap<>();
 
+
         for(Cell[] cellArray : starting_cells){
             for(Cell cell : cellArray){
                 double distance = cell.euclideanDist(endCell);
-                cellMap.put(cell, distance);
+                cellMap.put(cell, new AStarCell(distance, distance, 0));
             }
         }
-        cellMap.put(startCell, 0.0);
+        cellMap.get(startCell).g = 0;
     }
 
     @Override
@@ -27,15 +27,14 @@ public class GreedyBFS extends SearchAlgorithm {
         initializeCells(cells, startCell, endCell);
     }
 
-
-    public Cell getLowestScore() {
+    public Cell getLowestFScore() {
         if (openSet.isEmpty()) {
             return null;
         }
 
         Cell bestCell = openSet.get(0);
         for (Cell cell : openSet) {
-            if (cellMap.get(cell) < cellMap.get(bestCell)) {
+            if (cellMap.get(cell).f < cellMap.get(bestCell).f) {
                 bestCell = cell;
             }
         }
@@ -50,7 +49,7 @@ public class GreedyBFS extends SearchAlgorithm {
             return;
         }
 
-        Cell currentCell = getLowestScore();
+        Cell currentCell = getLowestFScore();
 
         openSet.remove(currentCell);
         closedSet.add(currentCell);
@@ -65,15 +64,23 @@ public class GreedyBFS extends SearchAlgorithm {
             if (neighbour.getCellType() == Cell.CellType.WALL || closedSet.contains(neighbour) || !isPossibleToMove(currentCell, neighbour))
                 continue;
 
-            neighbour.setCameFrom(currentCell);
-            if(!openSet.contains(neighbour))
-                openSet.add(neighbour);
-        }
+            double tentativeGScore = cellMap.get(currentCell).g + currentCell.euclideanDist(neighbour);
 
+            if (!openSet.contains(neighbour)) {
+                openSet.add(neighbour);
+            }else if(tentativeGScore >= cellMap.get(neighbour).g){
+                continue;
+            }
+
+            neighbour.setCameFrom(currentCell);
+            cellMap.get(neighbour).g = tentativeGScore;
+            cellMap.get(neighbour).f = tentativeGScore +  cellMap.get(neighbour).h;
+
+        }
     }
+
     @Override
     public String toString() {
-        return "GreedyBFS";
+        return "A Star (A*)";
     }
-
 }

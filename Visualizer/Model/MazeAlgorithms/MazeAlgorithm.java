@@ -1,4 +1,4 @@
-package Visualizer.MazeAlgorithms;
+package Visualizer.Model.MazeAlgorithms;
 
 import Visualizer.Cell;
 
