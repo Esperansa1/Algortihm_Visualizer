@@ -29,28 +29,27 @@ public class Controller {
     }
 
     public void onCellSelected(int row, int col) {
-        if(isBusy) return;
+        if(isBusy || previousSelectedCell == model.getCell(row,col)) return;
+        Cell current = model.getCell(row, col);
 
         if(model.getStartCell() == null || model.getEndCell() == null)
             model.onCellSelected(row, col);
-        else{
-            if(previousSelectedCell == null) {
-                previousSelectedCell = model.getCell(row, col);
-            }else{
-                Cell current = model.getCell(row, col);
-                model.addWall(previousSelectedCell, current);
-                previousSelectedCell = null;
-            }
-
+        else if(previousSelectedCell == null) {
+            previousSelectedCell = model.getCell(row, col);
+        }else{
+            model.addWall(previousSelectedCell, current);
+            previousSelectedCell = null;
         }
+
     }
 
     public void onCellDeselect(int row, int col) {
-        if(isBusy) return;
+        if(isBusy || previousSelectedCell == model.getCell(row,col)) return;
         Cell current = model.getCell(row, col);
+
         if(current.getCellType() == Cell.CellType.START_POINT || current.getCellType() == Cell.CellType.END_POINT)
             model.onCellDeselect(row, col);
-        if(previousDeselectedCell == null)
+        else if(previousDeselectedCell == null)
             previousDeselectedCell = model.getCell(row, col);
         else{
             model.removeWall(previousDeselectedCell, current);
@@ -89,7 +88,12 @@ public class Controller {
             mazeManager.initializeMazeGeneration(cells);
 
             while (mazeManager.isRunning()) {
-                mazeManager.stepMazeGeneration(cells);
+                try {
+                    mazeManager.stepMazeGeneration(cells);
+                    Thread.sleep(2);
+                } catch (InterruptedException exception) {
+                    break;
+                }
             }
             isBusy = false;
         }).start();

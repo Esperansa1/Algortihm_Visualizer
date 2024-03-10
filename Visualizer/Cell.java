@@ -50,6 +50,7 @@ public class Cell {
 
     public void changeWallState(Cell other, boolean state){
         int x = col - other.col;
+        int y = row - other.row;
 
         if (x == 1) {
             walls[3] = state;
@@ -58,10 +59,7 @@ public class Cell {
             walls[1] = state;
             other.walls[3] = state;
         }
-
-        int y = row - other.row;
-
-        if (y == 1) {
+        else if (y == 1) {
             walls[0] = state;
             other.walls[2] = state;
         } else if (y == -1) {

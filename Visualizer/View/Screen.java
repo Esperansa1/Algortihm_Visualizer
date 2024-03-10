@@ -57,6 +57,8 @@ public class Screen extends JFrame implements BoardObserver {
     private void drawGrid(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         g.setColor(Color.LIGHT_GRAY);
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
+
         for(int i = 0; i < GRID_WIDTH + Cell.CELL_SIZE; i += Cell.CELL_SIZE){
             g2d.drawLine(0, i, GRID_WIDTH, i);
         }
@@ -64,6 +66,8 @@ public class Screen extends JFrame implements BoardObserver {
         for(int i = 0; i < GRID_HEIGHT + Cell.CELL_SIZE; i += Cell.CELL_SIZE){
             g2d.drawLine(i, 0, i, GRID_HEIGHT);
         }
+
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 
 
     }
