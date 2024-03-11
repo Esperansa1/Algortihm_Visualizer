@@ -6,11 +6,11 @@ import Visualizer.Model.SearchAlgortihms.SearchAlgorithm;
 import java.util.*;
 
 public class AStar extends SearchAlgorithm {
+    public static final String NAME = "A Star (A*)";
     private Map<Cell, AStarCell> cellMap;
 
     private void initializeCells(Cell[][] starting_cells, Cell startCell, Cell endCell){
         cellMap = new HashMap<>();
-
 
         for(Cell[] cellArray : starting_cells){
             for(Cell cell : cellArray){
@@ -81,6 +81,6 @@ public class AStar extends SearchAlgorithm {
 
     @Override
     public String toString() {
-        return "A Star (A*)";
+        return NAME;
     }
 }

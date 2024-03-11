@@ -8,10 +8,11 @@ import java.util.Stack;
 
 public class SAW extends MazeAlgorithm {
 
+    public static final String NAME = "Self Avoiding Walk";
+
     private HashSet<Cell> closedSet;
     private Stack<Cell> stack;
-    private Cell current, previous;
-    private boolean isRunning;
+    private Cell current;
 
     @Override
     public void initializeMazeGeneration(Cell[][] cells) {
@@ -25,7 +26,6 @@ public class SAW extends MazeAlgorithm {
         int randomX = (int)(Math.random() * cells.length);
 
         current = cells[randomY][randomX];
-        previous = current;
 
         closedSet.add(current);
     }
@@ -34,13 +34,8 @@ public class SAW extends MazeAlgorithm {
     public void stepMazeGeneration(Cell[][] cells) {
         if(closedSet.size() == cells.length * cells[0].length){
             isRunning = false;
-            if(previous != null) {
-                previous.setCellType(Cell.CellType.EMPTY);
-            }
             return;
         }
-
-        highlight(current);
 
         Cell next = getRandomNeighbour(current);
         if(next != null){
@@ -49,39 +44,34 @@ public class SAW extends MazeAlgorithm {
             current.removeWall(next);
             current = next;
 
-        }else if(stack.size() != 0){
+        }else if(!stack.isEmpty()){
             current = stack.pop();
         }
     }
 
-    private void highlight(Cell current){
-
-        if(previous == null || current.getCellType() == Cell.CellType.START_POINT || current.getCellType() == Cell.CellType.END_POINT) return;
-
-        previous.setCellType(Cell.CellType.EMPTY);
-        current.setCellType(Cell.CellType.HIGHLIGHT);
-        previous = current;
-    }
+//    private void highlight(Cell current){
+//
+//        if(previous == null || current.getCellType() == Cell.CellType.START_POINT || current.getCellType() == Cell.CellType.END_POINT) return;
+//
+//        previous.setCellType(Cell.CellType.EMPTY);
+//        current.setCellType(Cell.CellType.HIGHLIGHT);
+//        previous = current;
+//    }
 
     public Cell getRandomNeighbour(Cell current) {
 
         ArrayList<Cell> neighbours = current.getNeighbours();
         List<Cell> filteredNeighbours = neighbours.stream().filter(cell -> !closedSet.contains(cell)).toList();
 
-        if(filteredNeighbours.size() == 0)
+        if(filteredNeighbours.isEmpty())
             return null;
         int randomIndex = (int)(Math.random() * filteredNeighbours.size());
         return filteredNeighbours.get(randomIndex);
     }
 
     @Override
-    public boolean isRunning() {
-        return isRunning;
-    }
-
-    @Override
     public String toString() {
-        return "Self Avoiding Walk";
+        return NAME;
     }
 
 }

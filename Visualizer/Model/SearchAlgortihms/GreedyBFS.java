@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GreedyBFS extends SearchAlgorithm {
-
+    public static final String NAME = "Greedy BFS";
     private Map<Cell, Double> cellMap;
 
     private void initializeCells(Cell[][] starting_cells, Cell startCell, Cell endCell){
@@ -73,7 +73,7 @@ public class GreedyBFS extends SearchAlgorithm {
     }
     @Override
     public String toString() {
-        return "GreedyBFS";
+        return NAME;
     }
 
 }

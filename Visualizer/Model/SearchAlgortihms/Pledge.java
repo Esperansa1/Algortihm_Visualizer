@@ -1,13 +1,14 @@
 package Visualizer.Model.SearchAlgortihms;
 
 import Visualizer.Cell;
-import com.sun.source.doctree.SerialTree;
 
 import java.util.HashSet;
 import java.util.Set;
 
 
 public class Pledge extends SearchAlgorithm {
+
+    public static final String NAME = "Pledge's Algorithm";
 
     private static final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
 
@@ -16,7 +17,6 @@ public class Pledge extends SearchAlgorithm {
     private Cell[][] cells;
     private Cell currentCell;
     private int currentDirection;
-    private int stepCounter;
 
     public void initializeSearch(Cell[][] cells) {
         super.initializeSearch(cells);
@@ -28,7 +28,6 @@ public class Pledge extends SearchAlgorithm {
         super.resetAlgorithm();
         currentDirection = RIGHT;
         currentCell = startCell;
-        stepCounter = 0;
         visitedCells = new HashSet<>();
 
     }
@@ -42,7 +41,6 @@ public class Pledge extends SearchAlgorithm {
         if (forward != null && forward.getCameFrom() == null)
             forward.setCameFrom(currentCell);
         currentCell = forward;
-        stepCounter++;
         visitedCells.add(currentCell);
     }
 
@@ -187,7 +185,7 @@ public class Pledge extends SearchAlgorithm {
 
     @Override
     public String toString() {
-        return "Pledge's Algorithm";
+        return NAME;
     }
 
 

@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 
 public class Prims extends MazeAlgorithm {
 
+    public static final String NAME = "Prim's Algorithm";
 
     private HashSet<Cell> closedSet;
     private ArrayList<Cell> openSet;
-    private ArrayList<Cell> uncheckedNeighbours;
-    private Cell current, previous;
+    private Cell current;
     private boolean isRunning;
 
     @Override
@@ -22,7 +22,6 @@ public class Prims extends MazeAlgorithm {
         super.initializeMazeGeneration(cells);
         isRunning = true;
 
-        uncheckedNeighbours = new ArrayList<>();
         openSet = new ArrayList<>();
         closedSet = new HashSet<>();
 
@@ -39,53 +38,41 @@ public class Prims extends MazeAlgorithm {
     public void stepMazeGeneration(Cell[][] cells) {
 
         if(openSet.isEmpty()) {
-            if(!(previous == null || current.getCellType() == Cell.CellType.START_POINT || current.getCellType() == Cell.CellType.END_POINT))
-                previous.setCellType(Cell.CellType.EMPTY);
             isRunning = false;
             return;
         }
         current = popRandomCell(openSet);
         closedSet.add(current);
 
-        ArrayList<Cell> visitedNeighbours = getUnvisitedNeighbours(current);
+        ArrayList<Cell> visitedNeighbours = getVisitedNeighbours(current);
 
         if(!visitedNeighbours.isEmpty()){
             Cell randomCell = popRandomCell(visitedNeighbours);
-            if(!closedSet.contains(randomCell))
-                randomCell.removeWall(current);
-            else
-                openSet.add(current);
+            randomCell.removeWall(current);
+            openSet.addAll(getUnvisitedNeighbours(current));
         }
-        openSet.addAll(getUnvisitedNeighbours(current));
 
+        openSet.removeIf(cell1 -> closedSet.contains(cell1));
+
+    }
+
+    private ArrayList<Cell> getSpecificNeighbours(Cell cell, boolean contains){
+        ArrayList<Cell> neighbours = cell.getNeighbours();
+        neighbours = neighbours.stream().filter(o -> closedSet.contains(o) == contains).collect(Collectors.toCollection(ArrayList::new));
+        return neighbours;
     }
 
     private ArrayList<Cell> getUnvisitedNeighbours(Cell cell){
-        ArrayList<Cell> neighbours = cell.getNeighbours();
-        neighbours = neighbours.stream().filter(o -> !closedSet.contains(o)).collect(Collectors.toCollection(ArrayList::new));
-
-
-
-        return neighbours;
+        return getSpecificNeighbours(cell, false);
     }
 
     private ArrayList<Cell> getVisitedNeighbours(Cell cell){
-        ArrayList<Cell> neighbours = cell.getNeighbours();
-        neighbours = neighbours.stream().filter(o -> closedSet.contains(o)).collect(Collectors.toCollection(ArrayList::new));
-        return neighbours;
+        return getSpecificNeighbours(cell, true);
     }
-
-//    private void highlight(Cell current){
-//
-//        if(previous == null || current.getCellType() == Cell.CellType.START_POINT || current.getCellType() == Cell.CellType.END_POINT) return;
-//
-//        previous.setCellType(Cell.CellType.EMPTY);
-//        current.setCellType(Cell.CellType.HIGHLIGHT);
-//        previous = current;
-//    }
 
     private Cell popRandomCell(ArrayList<Cell> arrayList){
         int index = (int)(Math.random() * arrayList.size());
+        System.out.println(arrayList.size() + " " + index);
         return arrayList.remove(index);
     }
 
@@ -96,6 +83,6 @@ public class Prims extends MazeAlgorithm {
 
     @Override
     public String toString() {
-        return "Prim's Algorithm";
+        return NAME;
     }
 }

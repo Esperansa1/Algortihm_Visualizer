@@ -7,6 +7,7 @@ import Visualizer.Model.BoardModel;
 import java.util.ArrayList;
 
 public abstract class SearchAlgorithm  {
+
     public boolean isRunning;
     protected ArrayList<Cell> openSet;
     protected ArrayList<Cell> closedSet;

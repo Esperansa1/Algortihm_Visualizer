@@ -7,6 +7,8 @@ import java.util.Stack;
 
 public class Tremaux extends SearchAlgorithm {
 
+    public static final String NAME = "Tremaux's Algorithm";
+
     private Stack<Cell> marks;
     private Cell currentCell;
     @Override
@@ -67,7 +69,7 @@ public class Tremaux extends SearchAlgorithm {
 
     @Override
     public String toString() {
-        return "Tremaux's Algorithm";
+        return NAME;
     }
 
 

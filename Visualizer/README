@@ -1,7 +1,6 @@
 TODO:
     -- Remove continue/break from algorithms because misrad ahinoh very dumb
-    -- FIX Prims maze generation algorithm
-    -- FIX Pledge search algorithm
+    -- Change cell to graph
 
 FINISHED:
     -- GreedyBFS, A*

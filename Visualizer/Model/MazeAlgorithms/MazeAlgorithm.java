@@ -4,7 +4,11 @@ import Visualizer.Cell;
 
 public abstract class MazeAlgorithm {
 
-    public abstract boolean isRunning();
+    protected boolean isRunning;
+
+    public boolean isRunning(){
+        return isRunning;
+    }
     public abstract void stepMazeGeneration(Cell[][] cells);
 
     public void initializeMazeGeneration(Cell[][] cells){
