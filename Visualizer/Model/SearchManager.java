@@ -1,5 +1,6 @@
 package Visualizer.Model;
 
+import Visualizer.BoardObserver;
 import Visualizer.Cell;
 import Visualizer.Observable;
 import Visualizer.Model.SearchAlgortihms.AStar.AStar;
@@ -11,7 +12,7 @@ import Visualizer.Model.SearchAlgortihms.Tremaux;
 
 import java.util.ArrayList;
 
-public class SearchManager extends Observable {
+public class SearchManager extends Observable<BoardObserver> {
     private final ArrayList<SearchAlgorithm> searchAlgorithm;
     private int currentAlgorithmIndex;
 
@@ -52,4 +53,10 @@ public class SearchManager extends Observable {
         getCurrentAlgorithm().resetAlgorithm();
     }
 
+    @Override
+    public void notifyObservers() {
+        for(BoardObserver observer : getObservers()){
+            observer.onBoardChanged();
+        }
+    }
 }

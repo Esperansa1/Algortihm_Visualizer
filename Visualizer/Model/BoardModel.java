@@ -4,7 +4,7 @@ package Visualizer.Model;
 import Visualizer.*;
 import Visualizer.View.Screen;
 
-public class BoardModel extends Observable {
+public class BoardModel extends Observable<BoardObserver> {
 
     private Graph graph;
     private Cell startCell, endCell;
@@ -73,6 +73,13 @@ public class BoardModel extends Observable {
             endCell = null;
 
         notifyObservers();
+    }
+
+    @Override
+    public void notifyObservers() {
+        for(BoardObserver observer : getObservers()){
+            observer.onBoardChanged();
+        }
     }
 
 }

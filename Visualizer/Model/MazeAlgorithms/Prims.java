@@ -14,7 +14,6 @@ public class Prims extends MazeAlgorithm {
 
     private HashSet<Cell> closedSet;
     private ArrayList<Cell> openSet;
-    private Cell current;
     private boolean isRunning;
 
     @Override
@@ -38,10 +37,11 @@ public class Prims extends MazeAlgorithm {
     public void stepMazeGeneration(Cell[][] cells) {
 
         if(openSet.isEmpty()) {
-            isRunning = false;
+            finish();
             return;
         }
         current = popRandomCell(openSet);
+
         closedSet.add(current);
 
         ArrayList<Cell> visitedNeighbours = getVisitedNeighbours(current);

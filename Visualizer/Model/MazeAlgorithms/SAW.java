@@ -12,7 +12,6 @@ public class SAW extends MazeAlgorithm {
 
     private HashSet<Cell> closedSet;
     private Stack<Cell> stack;
-    private Cell current;
 
     @Override
     public void initializeMazeGeneration(Cell[][] cells) {
@@ -33,11 +32,11 @@ public class SAW extends MazeAlgorithm {
     @Override
     public void stepMazeGeneration(Cell[][] cells) {
         if(closedSet.size() == cells.length * cells[0].length){
-            isRunning = false;
+            finish();
             return;
         }
-
         Cell next = getRandomNeighbour(current);
+
         if(next != null){
             closedSet.add(next);
             stack.push(current);
@@ -48,15 +47,6 @@ public class SAW extends MazeAlgorithm {
             current = stack.pop();
         }
     }
-
-//    private void highlight(Cell current){
-//
-//        if(previous == null || current.getCellType() == Cell.CellType.START_POINT || current.getCellType() == Cell.CellType.END_POINT) return;
-//
-//        previous.setCellType(Cell.CellType.EMPTY);
-//        current.setCellType(Cell.CellType.HIGHLIGHT);
-//        previous = current;
-//    }
 
     public Cell getRandomNeighbour(Cell current) {
 

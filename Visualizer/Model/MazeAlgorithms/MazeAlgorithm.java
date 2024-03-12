@@ -1,16 +1,15 @@
 package Visualizer.Model.MazeAlgorithms;
 
 import Visualizer.Cell;
+import Visualizer.HighlightObserver;
+import Visualizer.Observable;
 
-public abstract class MazeAlgorithm {
+public abstract class MazeAlgorithm extends Observable<HighlightObserver> {
 
     protected boolean isRunning;
+    protected Cell current;
 
-    public boolean isRunning(){
-        return isRunning;
-    }
     public abstract void stepMazeGeneration(Cell[][] cells);
-
     public void initializeMazeGeneration(Cell[][] cells){
 
         for(Cell[] cellArray : cells) {
@@ -27,6 +26,19 @@ public abstract class MazeAlgorithm {
                 cell.setupNeighbours(cells);
             }
         }
+    }
+
+    protected void finish(){
+        isRunning = false;
+        current = null;
+    }
+
+    public Cell getCurrent() {
+        return current;
+    }
+
+    public boolean isRunning(){
+        return isRunning;
     }
 
 

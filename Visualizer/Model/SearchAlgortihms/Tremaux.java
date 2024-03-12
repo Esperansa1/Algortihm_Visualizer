@@ -31,10 +31,9 @@ public class Tremaux extends SearchAlgorithm {
     private ArrayList<Cell> getUnvisitedNeighbours(Cell currentCell){
         ArrayList<Cell> cells = new ArrayList<>();
         for (Cell neighbour : currentCell.getNeighbours()) {
-            if (neighbour.getCellType() == Cell.CellType.WALL || closedSet.contains(neighbour) || !isPossibleToMove(currentCell, neighbour) || marks.contains(neighbour)) {
-                continue;
+            if (neighbour.getCellType() != Cell.CellType.WALL && !closedSet.contains(neighbour) && isPossibleToMove(currentCell, neighbour) && !marks.contains(neighbour)) {
+                cells.add(neighbour);
             }
-            cells.add(neighbour);
         }
         return cells;
     }

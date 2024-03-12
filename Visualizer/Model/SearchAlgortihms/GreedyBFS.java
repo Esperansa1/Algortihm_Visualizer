@@ -62,12 +62,11 @@ public class GreedyBFS extends SearchAlgorithm {
         }
 
         for (Cell neighbour : currentCell.getNeighbours()) {
-            if (neighbour.getCellType() == Cell.CellType.WALL || closedSet.contains(neighbour) || !isPossibleToMove(currentCell, neighbour))
-                continue;
-
-            neighbour.setCameFrom(currentCell);
-            if(!openSet.contains(neighbour))
-                openSet.add(neighbour);
+            if (neighbour.getCellType() != Cell.CellType.WALL && !closedSet.contains(neighbour) && isPossibleToMove(currentCell, neighbour)) {
+                neighbour.setCameFrom(currentCell);
+                if (!openSet.contains(neighbour))
+                    openSet.add(neighbour);
+            }
         }
 
     }

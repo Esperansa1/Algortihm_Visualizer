@@ -1,9 +1,6 @@
 package Visualizer.View;
 
-import Visualizer.BoardObserver;
-import Visualizer.Cell;
-import Visualizer.Controller;
-import Visualizer.Graph;
+import Visualizer.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -11,7 +8,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Stack;
 
-public class Screen extends JFrame implements BoardObserver {
+public class Screen extends JFrame implements BoardObserver, HighlightObserver {
 
     public static final int WIDTH = 1000;
     public static final int HEIGHT = 800;
@@ -22,12 +19,14 @@ public class Screen extends JFrame implements BoardObserver {
     private boolean isClickHeld;
     private final Controller controller;
 
+    private Cell highlight;
+
 
     public Screen(Controller controller) {
         super("Algorithm Visualizer");
 
         this.controller = controller;
-        controller.subscribeToModel(this);
+        controller.subscribeToModel(this, this);
 
         setLayout(null);
 
@@ -37,6 +36,7 @@ public class Screen extends JFrame implements BoardObserver {
                 super.paintComponent(g);
                 Cell[][] cells = controller.getModel().getCells();
                 drawCells(g, cells);
+                highlightCell(g);
                 drawGrid(g);
                 drawWalls(g, cells);
 
@@ -54,22 +54,33 @@ public class Screen extends JFrame implements BoardObserver {
 
     }
 
+    private void highlightCell(Graphics g) {
+        if(this.highlight == null) return;
+
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setColor(CellColors.getCellColor(Cell.CellType.HIGHLIGHT));
+
+        int size = Cell.CELL_SIZE;
+
+        g2d.fillRect(highlight.getCol() * size, highlight.getRow() * size, size, size);
+        this.highlight = null;
+    }
+
     private void drawGrid(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         g.setColor(Color.LIGHT_GRAY);
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
 
-        for(int i = 0; i < GRID_WIDTH + Cell.CELL_SIZE; i += Cell.CELL_SIZE){
+        int size = Cell.CELL_SIZE;
+        for(int i = 0; i < GRID_WIDTH + size; i += size){
             g2d.drawLine(0, i, GRID_WIDTH, i);
         }
 
-        for(int i = 0; i < GRID_HEIGHT + Cell.CELL_SIZE; i += Cell.CELL_SIZE){
+        for(int i = 0; i < GRID_HEIGHT + size; i += size){
             g2d.drawLine(i, 0, i, GRID_HEIGHT);
         }
 
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
-
-
     }
 
     // Method to add mouse listeners for handling clicks and drags
@@ -319,6 +330,8 @@ public class Screen extends JFrame implements BoardObserver {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.BLACK);
 
+        int size = Cell.CELL_SIZE;
+        
         for (int i = 0; i < cells.length; i++) {
             for (int j = 0; j < cells[i].length ; j++) {
                 boolean[] walls = cells[i][j].getWalls();
@@ -326,13 +339,13 @@ public class Screen extends JFrame implements BoardObserver {
                     if(walls[k]){
                         switch (k) {
                             case 0 ->
-                                    g2d.drawLine(j * Cell.CELL_SIZE, i * Cell.CELL_SIZE, j * Cell.CELL_SIZE + Cell.CELL_SIZE, i * Cell.CELL_SIZE);
+                                    g2d.drawLine(j * size, i * size, j * size + size, i * size);
                             case 1 ->
-                                    g2d.drawLine(j * Cell.CELL_SIZE + Cell.CELL_SIZE, i * Cell.CELL_SIZE, j * Cell.CELL_SIZE + Cell.CELL_SIZE, i * Cell.CELL_SIZE + Cell.CELL_SIZE);
+                                    g2d.drawLine(j * size + size, i * size, j * size + size, i * size + size);
                             case 2 ->
-                                    g2d.drawLine(j * Cell.CELL_SIZE, i * Cell.CELL_SIZE + Cell.CELL_SIZE, j * Cell.CELL_SIZE + Cell.CELL_SIZE, i * Cell.CELL_SIZE + Cell.CELL_SIZE);
+                                    g2d.drawLine(j * size, i * size + size, j * size + size, i * size + size);
                             case 3 ->
-                                    g2d.drawLine(j * Cell.CELL_SIZE, i * Cell.CELL_SIZE, j * Cell.CELL_SIZE, i * Cell.CELL_SIZE + Cell.CELL_SIZE);
+                                    g2d.drawLine(j * size, i * size, j * size, i * size + size);
                         }
                     }
                 }
@@ -343,11 +356,13 @@ public class Screen extends JFrame implements BoardObserver {
     private void drawLine(Graphics g, Cell c1, Cell c2){
         Graphics2D g2d = (Graphics2D) g;
 
-        int x1 = (c1.getCol() + 1) * Cell.CELL_SIZE - Cell.CELL_SIZE / 2;
-        int y1 = (c1.getRow() + 1) * Cell.CELL_SIZE - Cell.CELL_SIZE / 2;
+        int size = Cell.CELL_SIZE;
 
-        int x2 = (c2.getCol() + 1) * Cell.CELL_SIZE - Cell.CELL_SIZE / 2;
-        int y2 = (c2.getRow() + 1) * Cell.CELL_SIZE - Cell.CELL_SIZE / 2;
+        int x1 = (c1.getCol() + 1) * size - size / 2;
+        int y1 = (c1.getRow() + 1) * size - size / 2;
+
+        int x2 = (c2.getCol() + 1) * size - size / 2;
+        int y2 = (c2.getRow() + 1) * size - size / 2;
 
         g2d.setColor(CellColors.getCellColor(Cell.CellType.PATH));
         g2d.setStroke(new BasicStroke(10));
@@ -394,23 +409,27 @@ public class Screen extends JFrame implements BoardObserver {
     private void drawCells(Graphics g, Cell[][] cells){
         Graphics2D g2d = (Graphics2D) g;
 
-        int rows = GRID_HEIGHT / Cell.CELL_SIZE;
-        int cols = GRID_WIDTH / Cell.CELL_SIZE;
+        int size = Cell.CELL_SIZE;
+
+        int rows = GRID_HEIGHT / size;
+        int cols = GRID_WIDTH / size;
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 g2d.setColor(CellColors.getCellColor(cells[i][j]));
-                g2d.fillRect(j * Cell.CELL_SIZE, i * Cell.CELL_SIZE, Cell.CELL_SIZE, Cell.CELL_SIZE);
+                g2d.fillRect(j * size, i * size, size, size);
             }
         }
     }
 
     private void onLeftClick(int x, int y){
-        int row = y / Cell.CELL_SIZE;
-        int col = x / Cell.CELL_SIZE;
+        int size = Cell.CELL_SIZE;
 
-        int max_rows = GRID_HEIGHT / Cell.CELL_SIZE;
-        int max_cols = GRID_WIDTH / Cell.CELL_SIZE;
+        int row = y / size;
+        int col = x / size;
+
+        int max_rows = GRID_HEIGHT / size;
+        int max_cols = GRID_WIDTH / size;
 
         if(max_rows <= row || max_cols <= col) return;
 
@@ -418,11 +437,13 @@ public class Screen extends JFrame implements BoardObserver {
     }
     
     private void onRightClick(int x, int y){
-        int row = y / Cell.CELL_SIZE;
-        int col = x / Cell.CELL_SIZE;
+        int size = Cell.CELL_SIZE;
 
-        int max_rows = GRID_HEIGHT / Cell.CELL_SIZE;
-        int max_cols = GRID_WIDTH / Cell.CELL_SIZE;
+        int row = y / size;
+        int col = x / size;
+
+        int max_rows = GRID_HEIGHT / size;
+        int max_cols = GRID_WIDTH / size;
 
         if(max_rows <= row || max_cols <= col) return;
 
@@ -439,6 +460,14 @@ public class Screen extends JFrame implements BoardObserver {
 
     @Override
     public void onBoardChanged() {
+        drawingPanel.repaint();
+    }
+
+
+
+    @Override
+    public void onMazeHighlight(Cell cell) {
+        this.highlight = cell;
         drawingPanel.repaint();
     }
 

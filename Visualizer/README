@@ -1,6 +1,7 @@
 TODO:
-    -- Remove continue/break from algorithms because misrad ahinoh very dumb
     -- Change cell to graph
+    -- Fix Maze Highlight visualization
+
 
 FINISHED:
     -- GreedyBFS, A*

@@ -70,7 +70,7 @@ public class Controller {
                     searchManager.stepSearch();
                     Thread.sleep(1);
                 } catch (InterruptedException exception) {
-                    break;
+                    throw new RuntimeException();
                 }
             }
             view.drawPath(model.getStartCell(), model.getEndCell());
@@ -92,7 +92,7 @@ public class Controller {
                     mazeManager.stepMazeGeneration(cells);
                     Thread.sleep(2);
                 } catch (InterruptedException exception) {
-                    break;
+                    throw new RuntimeException();
                 }
             }
             isBusy = false;
@@ -120,10 +120,13 @@ public class Controller {
         return model;
     }
 
-    public void subscribeToModel(BoardObserver observer){
-        model.addObserver(observer);
-        mazeManager.addObserver(observer);
-        searchManager.addObserver(observer);
+    public void subscribeToModel(BoardObserver observer1, HighlightObserver observer2){
+        model.addObserver(observer1);
+        mazeManager.addObserver(observer1);
+        searchManager.addObserver(observer1);
+
+        mazeManager.addObserver(observer2);
+
     }
 
     public boolean isBusy() {

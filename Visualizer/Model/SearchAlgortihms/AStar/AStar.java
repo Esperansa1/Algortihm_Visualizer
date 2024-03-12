@@ -61,21 +61,22 @@ public class AStar extends SearchAlgorithm {
         }
 
         for (Cell neighbour : currentCell.getNeighbours()) {
-            if (neighbour.getCellType() == Cell.CellType.WALL || closedSet.contains(neighbour) || !isPossibleToMove(currentCell, neighbour))
-                continue;
+            if (neighbour.getCellType() != Cell.CellType.WALL && !closedSet.contains(neighbour) && isPossibleToMove(currentCell, neighbour)) {
 
-            double tentativeGScore = cellMap.get(currentCell).g + currentCell.euclideanDist(neighbour);
+                double tentativeGScore = cellMap.get(currentCell).g + currentCell.euclideanDist(neighbour);
 
-            if (!openSet.contains(neighbour)) {
-                openSet.add(neighbour);
-            }else if(tentativeGScore >= cellMap.get(neighbour).g){
-                continue;
+                if (!openSet.contains(neighbour)) {
+                    openSet.add(neighbour);
+                }
+
+                // If a better GSCore has been found, switch them around
+                if (tentativeGScore >= cellMap.get(neighbour).g) {
+                    neighbour.setCameFrom(currentCell);
+                    cellMap.get(neighbour).g = tentativeGScore;
+                    cellMap.get(neighbour).f = tentativeGScore + cellMap.get(neighbour).h;
+                }
+
             }
-
-            neighbour.setCameFrom(currentCell);
-            cellMap.get(neighbour).g = tentativeGScore;
-            cellMap.get(neighbour).f = tentativeGScore +  cellMap.get(neighbour).h;
-
         }
     }
 

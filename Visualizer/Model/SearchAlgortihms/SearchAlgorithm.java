@@ -3,14 +3,17 @@ package Visualizer.Model.SearchAlgortihms;
 import Visualizer.Cell;
 import Visualizer.Controller;
 import Visualizer.Model.BoardModel;
+import Visualizer.Observable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
-public abstract class SearchAlgorithm  {
+public abstract class SearchAlgorithm extends Observable {
 
     public boolean isRunning;
     protected ArrayList<Cell> openSet;
-    protected ArrayList<Cell> closedSet;
+    protected Set<Cell> closedSet;
     protected Cell startCell, endCell;
 
 
@@ -22,13 +25,13 @@ public abstract class SearchAlgorithm  {
     public void resetAlgorithm(){
 
         if(openSet != null)
-            openSet.forEach(cell -> {if(cell != null) cell.setCameFrom(null);});
+            openSet.forEach(cell -> { if(cell != null) cell.setCameFrom(null); });
         if(closedSet != null)
-            closedSet.forEach(cell -> {if(cell != null) cell.setCameFrom(null);});
+            closedSet.forEach(cell -> { if(cell != null) cell.setCameFrom(null); });
 
 
         this.openSet = new ArrayList<>();
-        this.closedSet = new ArrayList<>();
+        this.closedSet = new HashSet<>();
 
         if(this.startCell != null && this.endCell != null) {
             this.startCell.setCameFrom(null);

@@ -12,8 +12,6 @@ public class Pledge extends SearchAlgorithm {
 
     private static final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
 
-    private Set<Cell> visitedCells;
-
     private Cell[][] cells;
     private Cell currentCell;
     private int currentDirection;
@@ -28,7 +26,6 @@ public class Pledge extends SearchAlgorithm {
         super.resetAlgorithm();
         currentDirection = RIGHT;
         currentCell = startCell;
-        visitedCells = new HashSet<>();
 
     }
 
@@ -41,7 +38,7 @@ public class Pledge extends SearchAlgorithm {
         if (forward != null && forward.getCameFrom() == null)
             forward.setCameFrom(currentCell);
         currentCell = forward;
-        visitedCells.add(currentCell);
+        closedSet.add(currentCell);
     }
 
     @Override
@@ -51,7 +48,7 @@ public class Pledge extends SearchAlgorithm {
             return;
         }
 
-        if (visitedCells.size() == cells.length * cells[0].length) {
+        if (closedSet.size() == cells.length * cells[0].length) {
             // All reachable cells have been explored, but the goal was not found
             isRunning = false;
             return;
