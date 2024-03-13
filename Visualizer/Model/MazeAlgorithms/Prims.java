@@ -14,7 +14,6 @@ public class Prims extends MazeAlgorithm {
 
     private HashSet<Cell> closedSet;
     private ArrayList<Cell> openSet;
-    private boolean isRunning;
 
     @Override
     public void initializeMazeGeneration(Cell[][] cells) {
@@ -35,7 +34,6 @@ public class Prims extends MazeAlgorithm {
 
     @Override
     public void stepMazeGeneration(Cell[][] cells) {
-
         if(openSet.isEmpty()) {
             finish();
             return;
@@ -72,13 +70,7 @@ public class Prims extends MazeAlgorithm {
 
     private Cell popRandomCell(ArrayList<Cell> arrayList){
         int index = (int)(Math.random() * arrayList.size());
-        System.out.println(arrayList.size() + " " + index);
         return arrayList.remove(index);
-    }
-
-    @Override
-    public boolean isRunning() {
-        return isRunning;
     }
 
     @Override

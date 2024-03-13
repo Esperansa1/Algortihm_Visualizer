@@ -1,5 +1,6 @@
 package Visualizer.Model.SearchAlgortihms;
 
+import Visualizer.BoardObserver;
 import Visualizer.Cell;
 import Visualizer.Controller;
 import Visualizer.Model.BoardModel;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class SearchAlgorithm extends Observable {
+public abstract class SearchAlgorithm extends Observable<BoardObserver> {
 
     public boolean isRunning;
     protected ArrayList<Cell> openSet;

@@ -74,7 +74,6 @@ public class Controller {
                 }
             }
             view.drawPath(model.getStartCell(), model.getEndCell());
-
 //            isBusy = false;
         }).start();
     }
@@ -95,6 +94,7 @@ public class Controller {
                     throw new RuntimeException();
                 }
             }
+
             isBusy = false;
         }).start();
     }
