@@ -1,17 +1,22 @@
 package Visualizer.Model.SearchAlgortihms;
 
+import Visualizer.BoardGraph;
 import Visualizer.Cell;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class GreedyBFS extends SearchAlgorithm {
-    public static final String NAME = "Greedy BFS";
+
+    public static final String NAME = "A Star (A*)";
     private Map<Cell, Double> cellMap;
+    private BoardGraph graph;
 
-    private void initializeCells(Cell[][] starting_cells, Cell startCell, Cell endCell){
+    private void initializeCells(BoardGraph graph, Cell startCell, Cell endCell){
         cellMap = new HashMap<>();
+        this.graph = graph;
 
+        Cell[][] starting_cells = graph.getMatrix();
         for(Cell[] cellArray : starting_cells){
             for(Cell cell : cellArray){
                 double distance = cell.euclideanDist(endCell);
@@ -22,9 +27,9 @@ public class GreedyBFS extends SearchAlgorithm {
     }
 
     @Override
-    public void initializeSearch(Cell[][] cells) {
-        super.initializeSearch(cells);
-        initializeCells(cells, startCell, endCell);
+    public void initializeSearch(BoardGraph graph) {
+        super.initializeSearch(graph);
+        initializeCells(graph, startCell, endCell);
     }
 
 
@@ -61,10 +66,10 @@ public class GreedyBFS extends SearchAlgorithm {
             return;
         }
 
-        for (Cell neighbour : currentCell.getNeighbours()) {
+        for (Cell neighbour : graph.getNeighbours(currentCell)) {
             if (neighbour.getCellType() != Cell.CellType.WALL && !closedSet.contains(neighbour) && isPossibleToMove(currentCell, neighbour)) {
                 neighbour.setCameFrom(currentCell);
-                if (!openSet.contains(neighbour))
+                if(!openSet.contains(neighbour))
                     openSet.add(neighbour);
             }
         }

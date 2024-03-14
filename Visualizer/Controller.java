@@ -29,18 +29,19 @@ public class Controller {
     }
 
     public void onCellSelected(int row, int col) {
-        if(isBusy || previousSelectedCell == model.getCell(row,col)) return;
-        Cell current = model.getCell(row, col);
+        BoardGraph graph = model.getBoardGraph();
+
+        if(isBusy || previousSelectedCell == graph.getCell(row,col)) return;
+        Cell current = graph.getCell(row, col);
 
         if(model.getStartCell() == null || model.getEndCell() == null)
             model.onCellSelected(row, col);
         else if(previousSelectedCell == null) {
-            previousSelectedCell = model.getCell(row, col);
+            previousSelectedCell = graph.getCell(row, col);
         }else{
             model.addWall(previousSelectedCell, current);
             previousSelectedCell = null;
         }
-
     }
 
     public void onCellDeselect(int row, int col) {
@@ -59,10 +60,10 @@ public class Controller {
 
     public void visualizeSearch() {
         new Thread(() -> {
-            if (model.getStartCell() == null || model.getEndCell() == null) return;
+            if (model.getStartCell() == null || model.getEndCell() == null || isBusy) return;
 
-            Cell[][] cells = model.getCells();
-            searchManager.initializeSearch(cells);
+            BoardGraph graph = model.getBoardGraph();
+            searchManager.initializeSearch(graph);
 
             isBusy = true;
             while (searchManager.isRunning()) {
@@ -70,10 +71,11 @@ public class Controller {
                     searchManager.stepSearch();
                     Thread.sleep(1);
                 } catch (InterruptedException exception) {
-                    throw new RuntimeException();
+                    break;
                 }
             }
             view.drawPath(model.getStartCell(), model.getEndCell());
+
 //            isBusy = false;
         }).start();
     }
@@ -83,12 +85,12 @@ public class Controller {
             if (isBusy) return;
             isBusy = true;
 
-            Cell[][] cells = model.getCells();
-            mazeManager.initializeMazeGeneration(cells);
+
+            mazeManager.initializeMazeGeneration(model.getBoardGraph());
 
             while (mazeManager.isRunning()) {
                 try {
-                    mazeManager.stepMazeGeneration(cells);
+                    mazeManager.stepMazeGeneration(model.getBoardGraph());
                     Thread.sleep(2);
                 } catch (InterruptedException exception) {
                     throw new RuntimeException();
@@ -145,7 +147,7 @@ public class Controller {
         Cell[][] cells = model.getCells();
         if(cells.length == rows && cells[0].length == cols) return;
 
-        Cell.CELL_SIZE = value;
+        Cell.setCellSize(value);
         model.updateGraphMatrix(rows, cols);
     }
 

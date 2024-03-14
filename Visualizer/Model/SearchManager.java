@@ -1,5 +1,6 @@
 package Visualizer.Model;
 
+import Visualizer.BoardGraph;
 import Visualizer.BoardObserver;
 import Visualizer.Cell;
 import Visualizer.Observable;
@@ -42,8 +43,8 @@ public class SearchManager extends Observable<BoardObserver> {
         getCurrentAlgorithm().stepSearch();
         notifyObservers();
     }
-    public void initializeSearch(Cell[][] cells){
-        getCurrentAlgorithm().initializeSearch(cells);
+    public void initializeSearch(BoardGraph graph){
+        getCurrentAlgorithm().initializeSearch(graph);
     }
 
     public void nextAlgorithm(){

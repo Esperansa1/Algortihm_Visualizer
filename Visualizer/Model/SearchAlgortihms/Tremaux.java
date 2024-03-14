@@ -1,5 +1,6 @@
 package Visualizer.Model.SearchAlgortihms;
 
+import Visualizer.BoardGraph;
 import Visualizer.Cell;
 
 import java.util.ArrayList;
@@ -8,12 +9,14 @@ import java.util.Stack;
 public class Tremaux extends SearchAlgorithm {
 
     public static final String NAME = "Tremaux's Algorithm";
+    private BoardGraph graph;
 
     private Stack<Cell> marks;
     private Cell currentCell;
     @Override
-    public void initializeSearch(Cell[][] cells) {
-        super.initializeSearch(cells);
+    public void initializeSearch(BoardGraph graph) {
+        super.initializeSearch(graph);
+        this.graph = graph;
         currentCell = startCell;
         marks = new Stack<>();
         marks.push(startCell);
@@ -30,7 +33,7 @@ public class Tremaux extends SearchAlgorithm {
 
     private ArrayList<Cell> getUnvisitedNeighbours(Cell currentCell){
         ArrayList<Cell> cells = new ArrayList<>();
-        for (Cell neighbour : currentCell.getNeighbours()) {
+        for (Cell neighbour : graph.getNeighbours(currentCell)) {
             if (neighbour.getCellType() != Cell.CellType.WALL && !closedSet.contains(neighbour) && isPossibleToMove(currentCell, neighbour) && !marks.contains(neighbour)) {
                 cells.add(neighbour);
             }
@@ -58,7 +61,7 @@ public class Tremaux extends SearchAlgorithm {
         Cell next = unvisitedNeighbours.isEmpty() ? null :  getRandomNeighbour(unvisitedNeighbours);
         if(next != null){
             closedSet.add(currentCell);
-            if(!next.getNeighbours().isEmpty())
+            if(!graph.getNeighbours(next).isEmpty())
                 marks.push(next);
             next.setCameFrom(currentCell);
         }else if(!marks.isEmpty()){

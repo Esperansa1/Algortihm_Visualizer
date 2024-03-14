@@ -1,5 +1,6 @@
 package Visualizer.Model.SearchAlgortihms.AStar;
 
+import Visualizer.BoardGraph;
 import Visualizer.Cell;
 import Visualizer.Model.SearchAlgortihms.SearchAlgorithm;
 
@@ -8,10 +9,14 @@ import java.util.*;
 public class AStar extends SearchAlgorithm {
     public static final String NAME = "A Star (A*)";
     private Map<Cell, AStarCell> cellMap;
+    private BoardGraph graph;
 
-    private void initializeCells(Cell[][] starting_cells, Cell startCell, Cell endCell){
+
+    private void initializeCells(BoardGraph graph, Cell startCell, Cell endCell){
         cellMap = new HashMap<>();
+        this.graph = graph;
 
+        Cell[][] starting_cells = graph.getMatrix();
         for(Cell[] cellArray : starting_cells){
             for(Cell cell : cellArray){
                 double distance = cell.euclideanDist(endCell);
@@ -22,9 +27,9 @@ public class AStar extends SearchAlgorithm {
     }
 
     @Override
-    public void initializeSearch(Cell[][] cells) {
-        super.initializeSearch(cells);
-        initializeCells(cells, startCell, endCell);
+    public void initializeSearch(BoardGraph graph) {
+        super.initializeSearch(graph);
+        initializeCells(graph, startCell, endCell);
     }
 
     public Cell getLowestFScore() {
@@ -60,7 +65,7 @@ public class AStar extends SearchAlgorithm {
             return;
         }
 
-        for (Cell neighbour : currentCell.getNeighbours()) {
+        for (Cell neighbour : graph.getNeighbours(currentCell)) {
             if (neighbour.getCellType() != Cell.CellType.WALL && !closedSet.contains(neighbour) && isPossibleToMove(currentCell, neighbour)) {
 
                 double tentativeGScore = cellMap.get(currentCell).g + currentCell.euclideanDist(neighbour);

@@ -1,12 +1,9 @@
 package Visualizer.Model;
 
-import Visualizer.BoardObserver;
-import Visualizer.Cell;
-import Visualizer.HighlightObserver;
+import Visualizer.*;
 import Visualizer.Model.MazeAlgorithms.MazeAlgorithm;
 import Visualizer.Model.MazeAlgorithms.Prims;
 import Visualizer.Model.MazeAlgorithms.SAW;
-import Visualizer.Observable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +27,13 @@ public class MazeManager extends Observable<BoardObserver> {
         return mazeAlgorithm.get(currentAlgorithmIndex);
     }
 
-    public void stepMazeGeneration(Cell[][] cells){
-        getCurrentAlgorithm().stepMazeGeneration(cells);
+    public void stepMazeGeneration(BoardGraph graph){
+        getCurrentAlgorithm().stepMazeGeneration(graph);
         notifyObservers();
     }
 
-    public void initializeMazeGeneration(Cell[][] cells){
-        getCurrentAlgorithm().initializeMazeGeneration(cells);
+    public void initializeMazeGeneration(BoardGraph graph){
+        getCurrentAlgorithm().initializeMazeGeneration(graph);
     }
 
     public String getCurrentAlgorithmName(){

@@ -1,10 +1,7 @@
 package Visualizer.Model.SearchAlgortihms;
 
-import Visualizer.BoardObserver;
-import Visualizer.Cell;
-import Visualizer.Controller;
+import Visualizer.*;
 import Visualizer.Model.BoardModel;
-import Visualizer.Observable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,7 +40,8 @@ public abstract class SearchAlgorithm extends Observable<BoardObserver> {
         isRunning = true;
     }
 
-    public void initializeSearch(Cell[][] cells) {
+    public void initializeSearch(BoardGraph graph) {
+        Cell[][] cells = graph.getMatrix();
         for (Cell[] value : cells) {
             for (Cell cell : value) {
                 Cell.CellType cellType = cell.getCellType();

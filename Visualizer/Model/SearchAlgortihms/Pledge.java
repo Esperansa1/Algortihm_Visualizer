@@ -1,10 +1,7 @@
 package Visualizer.Model.SearchAlgortihms;
 
+import Visualizer.BoardGraph;
 import Visualizer.Cell;
-
-import java.util.HashSet;
-import java.util.Set;
-
 
 public class Pledge extends SearchAlgorithm {
 
@@ -12,13 +9,13 @@ public class Pledge extends SearchAlgorithm {
 
     private static final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
 
-    private Cell[][] cells;
+    private BoardGraph graph;
     private Cell currentCell;
     private int currentDirection;
 
-    public void initializeSearch(Cell[][] cells) {
-        super.initializeSearch(cells);
-        this.cells = cells;
+    public void initializeSearch(BoardGraph graph) {
+        super.initializeSearch(graph);
+        this.graph = graph;
     }
 
     @Override
@@ -48,6 +45,7 @@ public class Pledge extends SearchAlgorithm {
             return;
         }
 
+        Cell[][] cells = graph.getMatrix();
         if (closedSet.size() == cells.length * cells[0].length) {
             // All reachable cells have been explored, but the goal was not found
             isRunning = false;
@@ -92,6 +90,7 @@ public class Pledge extends SearchAlgorithm {
 
     private Cell getForward() {
 
+        Cell[][] cells = graph.getMatrix();
         // RIGHT LEFT DOWN UP
         int numRows = cells.length;
         int numCols = cells[0].length;

@@ -1,26 +1,28 @@
 package Visualizer.Model.MazeAlgorithms;
 
+import Visualizer.BoardGraph;
 import Visualizer.Cell;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Stack;
+
+import java.util.*;
 
 public class SAW extends MazeAlgorithm {
 
     public static final String NAME = "Self Avoiding Walk";
 
+    private BoardGraph graph;
     private HashSet<Cell> closedSet;
     private Stack<Cell> stack;
 
     @Override
-    public void initializeMazeGeneration(Cell[][] cells) {
-        super.initializeMazeGeneration(cells);
+    public void initializeMazeGeneration(BoardGraph graph) {
+        super.initializeMazeGeneration(graph);
         isRunning = true;
+        this.graph = graph;
 
         closedSet = new HashSet<>();
         stack = new Stack<>();
 
+        Cell[][] cells = graph.getMatrix();
         int randomY = (int)(Math.random() * cells.length);
         int randomX = (int)(Math.random() * cells.length);
 
@@ -30,7 +32,8 @@ public class SAW extends MazeAlgorithm {
     }
 
     @Override
-    public void stepMazeGeneration(Cell[][] cells) {
+    public void stepMazeGeneration(BoardGraph graph) {
+        Cell[][] cells = graph.getMatrix();
         if(closedSet.size() == cells.length * cells[0].length){
             finish();
             return;
@@ -50,7 +53,7 @@ public class SAW extends MazeAlgorithm {
 
     public Cell getRandomNeighbour(Cell current) {
 
-        ArrayList<Cell> neighbours = current.getNeighbours();
+        Set<Cell> neighbours = graph.getNeighbours(current);
         List<Cell> filteredNeighbours = neighbours.stream().filter(cell -> !closedSet.contains(cell)).toList();
 
         if(filteredNeighbours.isEmpty())

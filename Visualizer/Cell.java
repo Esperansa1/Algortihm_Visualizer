@@ -17,14 +17,11 @@ public class Cell {
     private CellType cellType;
     private Cell cameFrom;
 
-    private ArrayList<Cell> neighbours;
-
     public Cell(int row, int col, CellType cellType, boolean[] walls) {
         this.row = row;
         this.col = col;
         this.cellType = cellType;
         this.walls = walls;
-        neighbours = new ArrayList<>();
 
     }
 
@@ -32,8 +29,6 @@ public class Cell {
         this.row = row;
         this.col = col;
         this.cellType = CellType.EMPTY;
-        neighbours = new ArrayList<>();
-
     }
 
     public boolean[] getWalls() {
@@ -79,38 +74,9 @@ public class Cell {
         return Math.sqrt(distances[0] * distances[0] + distances[1] * distances[1]);
     }
 
-    public void setupNeighbours(Cell[][] cells){
-        neighbours = new ArrayList<>();
-
-        int numRows = cells.length;
-        int numCols = cells[0].length;
-
-        // Right
-        if (col + 1 < numCols) {
-            neighbours.add(cells[row][col + 1]);
-        }
-
-        // Left
-        if (col - 1 >= 0) {
-            neighbours.add(cells[row][col - 1]);
-        }
-
-        // Down
-        if (row + 1 < numRows) {
-            neighbours.add(cells[row + 1][col]);
-        }
-
-        // Up
-        if (row - 1 >= 0) {
-            neighbours.add(cells[row - 1][col]);
-        }
-
+    public static void setCellSize(int size){
+        CELL_SIZE = size;
     }
-    public ArrayList<Cell> getNeighbours() {
-        return neighbours;
-    }
-
-
 
 
     public CellType getCellType() {

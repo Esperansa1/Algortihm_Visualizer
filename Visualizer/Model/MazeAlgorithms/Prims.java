@@ -1,39 +1,42 @@
 package Visualizer.Model.MazeAlgorithms;
 
+import Visualizer.BoardGraph;
 import Visualizer.Cell;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Prims extends MazeAlgorithm {
 
     public static final String NAME = "Prim's Algorithm";
 
+    private BoardGraph graph;
     private HashSet<Cell> closedSet;
     private ArrayList<Cell> openSet;
 
     @Override
-    public void initializeMazeGeneration(Cell[][] cells) {
-        super.initializeMazeGeneration(cells);
+    public void initializeMazeGeneration(BoardGraph graph) {
+        super.initializeMazeGeneration(graph);
         isRunning = true;
+        this.graph = graph;
 
         openSet = new ArrayList<>();
         closedSet = new HashSet<>();
 
+        Cell[][] cells = graph.getMatrix();
         int randomX = (int)(Math.random() * cells.length);
         int randomY = (int)(Math.random() * cells.length);
 
         current = cells[randomY][randomX];
         closedSet.add(current);
-        openSet.addAll(current.getNeighbours());
+        openSet.addAll(graph.getNeighbours(current));
 
     }
 
     @Override
-    public void stepMazeGeneration(Cell[][] cells) {
+    public void stepMazeGeneration(BoardGraph graph) {
         if(openSet.isEmpty()) {
             finish();
             return;
@@ -55,9 +58,9 @@ public class Prims extends MazeAlgorithm {
     }
 
     private ArrayList<Cell> getSpecificNeighbours(Cell cell, boolean contains){
-        ArrayList<Cell> neighbours = cell.getNeighbours();
-        neighbours = neighbours.stream().filter(o -> closedSet.contains(o) == contains).collect(Collectors.toCollection(ArrayList::new));
-        return neighbours;
+        Set<Cell> neighbours = graph.getNeighbours(cell);
+        ArrayList<Cell> neighboursArr = neighbours.stream().filter(o -> closedSet.contains(o) == contains).collect(Collectors.toCollection(ArrayList::new));
+        return neighboursArr;
     }
 
     private ArrayList<Cell> getUnvisitedNeighbours(Cell cell){

@@ -6,7 +6,7 @@ import Visualizer.View.Screen;
 
 public class BoardModel extends Observable<BoardObserver> {
 
-    private Graph graph;
+    private BoardGraph boardGraph;
     private Cell startCell, endCell;
 
     public BoardModel() {
@@ -24,8 +24,12 @@ public class BoardModel extends Observable<BoardObserver> {
         return endCell;
     }
 
+    public BoardGraph getBoardGraph() {
+        return boardGraph;
+    }
+
     public Cell[][] getCells() {
-        return graph.getMatrix();
+        return boardGraph.getMatrix();
     }
 
     public Cell getCell(int row, int col){
@@ -33,7 +37,7 @@ public class BoardModel extends Observable<BoardObserver> {
     }
 
     public void updateGraphMatrix(int rows, int cols) {
-        this.graph = new Graph(rows, cols);
+        this.boardGraph = new BoardGraph(rows, cols);
         startCell = null;
         endCell = null;
         notifyObservers();
@@ -41,7 +45,7 @@ public class BoardModel extends Observable<BoardObserver> {
     }
 
     public void onCellSelected(int row, int col) {
-        Cell cell = graph.getCell(row, col);
+        Cell cell = boardGraph.getCell(row, col);
         if (cell.getCellType() == Cell.CellType.START_POINT || cell.getCellType() == Cell.CellType.END_POINT)
             return;
 
@@ -65,7 +69,7 @@ public class BoardModel extends Observable<BoardObserver> {
     }
 
     public void onCellDeselect(int row, int col) {
-        Cell selected = graph.getCell(row, col);
+        Cell selected = boardGraph.getCell(row, col);
         selected.setCellType(Cell.CellType.EMPTY);
         if (selected.equals(startCell))
             startCell = null;

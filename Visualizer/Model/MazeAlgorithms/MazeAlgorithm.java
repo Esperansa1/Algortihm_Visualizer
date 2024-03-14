@@ -1,5 +1,6 @@
 package Visualizer.Model.MazeAlgorithms;
 
+import Visualizer.BoardGraph;
 import Visualizer.Cell;
 import Visualizer.HighlightObserver;
 import Visualizer.Observable;
@@ -9,9 +10,9 @@ public abstract class MazeAlgorithm extends Observable<HighlightObserver> {
     protected boolean isRunning;
     protected Cell current;
 
-    public abstract void stepMazeGeneration(Cell[][] cells);
-    public void initializeMazeGeneration(Cell[][] cells){
-
+    public abstract void stepMazeGeneration(BoardGraph graph);
+    public void initializeMazeGeneration(BoardGraph graph){
+        Cell[][] cells = graph.getMatrix();
         for(Cell[] cellArray : cells) {
             for (Cell cell : cellArray) {
                 cell.setWalls(new boolean[]{true, true, true, true});
@@ -19,11 +20,6 @@ public abstract class MazeAlgorithm extends Observable<HighlightObserver> {
                 if(type != Cell.CellType.START_POINT && type != Cell.CellType.END_POINT){
                     cell.setCellType(Cell.CellType.EMPTY);
                 }
-            }
-        }
-        for(Cell[] cellArray : cells) {
-            for (Cell cell : cellArray) {
-                cell.setupNeighbours(cells);
             }
         }
     }
