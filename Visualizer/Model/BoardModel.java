@@ -6,6 +6,8 @@ import Visualizer.View.Screen;
 
 public class BoardModel extends Observable<BoardObserver> {
 
+    public enum NextPlace {START, END, WALL}
+
     private BoardGraph boardGraph;
     private Cell startCell, endCell;
 
@@ -30,10 +32,6 @@ public class BoardModel extends Observable<BoardObserver> {
 
     public Cell[][] getCells() {
         return boardGraph.getMatrix();
-    }
-
-    public Cell getCell(int row, int col){
-        return getCells()[row][col];
     }
 
     public void updateGraphMatrix(int rows, int cols) {
@@ -79,11 +77,21 @@ public class BoardModel extends Observable<BoardObserver> {
         notifyObservers();
     }
 
+    public NextPlace getNextPlace(){
+        if(this.startCell == null) return NextPlace.START;
+        if(this.endCell == null) return NextPlace.END;
+        return NextPlace.WALL;
+    }
+
+
     @Override
     public void notifyObservers() {
         for(BoardObserver observer : getObservers()){
             observer.onBoardChanged();
         }
     }
+
+
+
 
 }

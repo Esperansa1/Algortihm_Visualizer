@@ -10,10 +10,8 @@ public class Controller {
     private static BoardModel model = null;
     private final MazeManager mazeManager;
     private final SearchManager searchManager;
-    private Screen view;
-
+    private final Screen view;
     private boolean isBusy;
-
     private Cell previousSelectedCell, previousDeselectedCell;
 
 
@@ -31,8 +29,8 @@ public class Controller {
     public void onCellSelected(int row, int col) {
         BoardGraph graph = model.getBoardGraph();
 
-        if(isBusy || previousSelectedCell == graph.getCell(row,col)) return;
         Cell current = graph.getCell(row, col);
+        if(isBusy || current.equals(previousDeselectedCell)) return;
 
         if(model.getStartCell() == null || model.getEndCell() == null)
             model.onCellSelected(row, col);
@@ -45,14 +43,17 @@ public class Controller {
     }
 
     public void onCellDeselect(int row, int col) {
-        if(isBusy || previousSelectedCell == model.getCell(row,col)) return;
-        Cell current = model.getCell(row, col);
+        BoardGraph graph = model.getBoardGraph();
+        Cell current = graph.getCell(row, col);
+
+        if(isBusy || current.equals(previousDeselectedCell)) return;
 
         if(current.getCellType() == Cell.CellType.START_POINT || current.getCellType() == Cell.CellType.END_POINT)
             model.onCellDeselect(row, col);
         else if(previousDeselectedCell == null)
-            previousDeselectedCell = model.getCell(row, col);
+            previousDeselectedCell = graph.getCell(row, col);
         else{
+            System.out.println("Removing wall at: " + previousDeselectedCell + " --- " + current);
             model.removeWall(previousDeselectedCell, current);
             previousDeselectedCell = null;
         }

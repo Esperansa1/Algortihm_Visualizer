@@ -20,6 +20,7 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
     private final Controller controller;
 
     private Cell highlight;
+    JLabel stateLabel;
 
 
     public Screen(Controller controller) {
@@ -39,6 +40,7 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
                 highlightCell(g);
                 drawGrid(g);
                 drawWalls(g, cells);
+                updateStateLabel();
 
             }
         };
@@ -52,6 +54,10 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
         setFrameProperties();
         initializeComponents(controller);
 
+    }
+
+    private void updateStateLabel() {
+        stateLabel.setText("Currently Placing: " +controller.getModel().getNextPlace().toString());
     }
 
     private void highlightCell(Graphics g) {
@@ -156,6 +162,8 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
         JLabel sliderLabel = getLabel("Cell size:", 310, padding);
         JSlider slider = getSlider(350, padding);
 
+        stateLabel = getLabel("Current State:" +controller.getModel().getNextPlace().toString(), 410, padding);
+
         JLabel madeByLabel = getLabel("Made By: Or Esperansa", HEIGHT - 50, padding);
 
         JButton userManualBtn = getButton("User Manual", HEIGHT - 100, padding);
@@ -191,6 +199,8 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
 
         getContentPane().add(mazeLabel);
         getContentPane().add(nextMazeBtn);
+        getContentPane().add(stateLabel);
+
 
         getContentPane().add(sliderLabel);
         getContentPane().add(slider);

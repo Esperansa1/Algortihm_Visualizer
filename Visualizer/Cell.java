@@ -1,6 +1,8 @@
 package Visualizer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 
 
 public class Cell {
@@ -47,17 +49,17 @@ public class Cell {
         int x = col - other.col;
         int y = row - other.row;
 
-        if (x == 1) {
+        if (x >= 1) {
             walls[3] = state;
             other.walls[1] = state;
-        } else if (x == -1) {
+        } else if (x <= -1) {
             walls[1] = state;
             other.walls[3] = state;
         }
-        else if (y == 1) {
+        else if (y >= 1) {
             walls[0] = state;
             other.walls[2] = state;
-        } else if (y == -1) {
+        } else if (y <= -1) {
             walls[2] = state;
             other.walls[0] = state;
         }
@@ -111,6 +113,11 @@ public class Cell {
         return "Row: "+row + " Col:" +col;
     }
 
-    
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(row, col, cellType, cameFrom);
+        result = 31 * result + Arrays.hashCode(walls);
+        return result;
+    }
 }
 
