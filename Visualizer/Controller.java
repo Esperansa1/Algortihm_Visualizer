@@ -53,7 +53,6 @@ public class Controller {
         else if(previousDeselectedCell == null)
             previousDeselectedCell = graph.getCell(row, col);
         else{
-            System.out.println("Removing wall at: " + previousDeselectedCell + " --- " + current);
             model.removeWall(previousDeselectedCell, current);
             previousDeselectedCell = null;
         }
@@ -77,7 +76,6 @@ public class Controller {
             }
             view.drawPath(model.getStartCell(), model.getEndCell());
 
-//            isBusy = false;
         }).start();
     }
 
