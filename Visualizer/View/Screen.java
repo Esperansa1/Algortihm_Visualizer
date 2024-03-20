@@ -361,7 +361,7 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
 
     private void drawWalls(Graphics g, Cell[][] cells) {
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setColor(Color.BLACK);
+        g2d.setColor(CellColors.getCellColor(Cell.CellType.WALL));
 
         int size = Cell.CELL_SIZE;
         

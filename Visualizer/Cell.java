@@ -8,7 +8,6 @@ import java.util.Objects;
 public class Cell {
     public enum CellType {EMPTY, WALL, PATH, OPEN_SET, CLOSE_SET, START_POINT, END_POINT, HIGHLIGHT}
                             // TOP  RIGHT BOTTOM LEFT
-//    private boolean[] walls = {true, true, true, true};
     private boolean[] walls = {false, false, false, false};
 
     public static int CELL_SIZE = 40;
