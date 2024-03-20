@@ -21,13 +21,16 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
 
     private Cell highlight;
     private JLabel stateLabel;
-    private boolean isEnabled;
+    private boolean visualize = true;
 
     public Screen(Controller controller) {
         super("Algorithm Visualizer");
 
         this.controller = controller;
-        controller.subscribeToModel(this, this);
+        controller.subscribeToBoardModel(this);
+        controller.subscribeToHighlightModel(this);
+
+
 
         setLayout(null);
 
@@ -160,7 +163,7 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
         JButton nextMazeBtn = getButton("Change Maze", 250, padding);
 
         JLabel sliderLabel = getLabel("Cell size:", 310, padding);
-        JSlider slider = getSlider(350, padding);
+        JSlider slider = getSlider(padding);
 
         stateLabel = getLabel("Current State:" +controller.getModel().getNextPlace().toString(), 410, padding);
 
@@ -170,22 +173,13 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
 
         JButton colorPickerBtn = getButton("Color picker", HEIGHT - 150, padding);
 
-        JCheckBox checkbox = new JCheckBox("Turn on/off cell colors", true);
-        int checkboxAlignment = GRID_WIDTH + (WIDTH - GRID_WIDTH - 165 + padding) / 2;
-
-        checkbox.setBounds(checkboxAlignment, 470, 165, 40);
-        checkbox.addChangeListener(e -> {
-            if(checkbox.isSelected() != isEnabled) {
-                isEnabled = checkbox.isSelected();
-                drawingPanel.repaint();
-            }
-        });
+        JCheckBox checkbox = getCheckBox(controller, padding);
 
         userManualBtn.addActionListener(e -> userManual());
 
         colorPickerBtn.addActionListener(e -> colorPicker());
 
-        startSearchBtn.addActionListener(e -> controller.visualizeSearch());
+        startSearchBtn.addActionListener(e -> controller.visualizeSearch(visualize));
 
         startMazeBtn.addActionListener(e -> controller.visualizeMaze());
         nextSearchBtn.addActionListener(e -> {
@@ -222,6 +216,25 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
 
 
 
+    }
+
+    private JCheckBox getCheckBox(Controller controller, int padding) {
+        JCheckBox checkbox = new JCheckBox("Turn on/off cell colors", true);
+        int checkboxAlignment = GRID_WIDTH + (WIDTH - GRID_WIDTH - 165 + padding) / 2;
+
+        checkbox.setBounds(checkboxAlignment, 470, 165, 40);
+        checkbox.addChangeListener(e -> {
+            if(controller.isBusy()) {
+                checkbox.setSelected(visualize);
+                return;
+            }
+
+            if(checkbox.isSelected() != visualize) {
+                visualize = checkbox.isSelected();
+                drawingPanel.repaint();
+            }
+        });
+        return checkbox;
     }
 
     private void userManual() {
@@ -313,7 +326,7 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
         return button;
     }
 
-    private JSlider getSlider(int y, int padding) {
+    private JSlider getSlider(int padding) {
 
         JSlider slider = new JSlider(JSlider.HORIZONTAL, 20, 100, 40);
 
@@ -342,7 +355,7 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
 
         int sliderWidth = 100;
         int sliderAlignment = GRID_WIDTH + (WIDTH - GRID_WIDTH - sliderWidth + padding)/2;
-        slider.setBounds(sliderAlignment, y, sliderWidth, 40);
+        slider.setBounds(sliderAlignment, 350, sliderWidth, 40);
         return slider;
     }
 
@@ -440,7 +453,7 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
 
                 Cell.CellType type = cells[i][j].getCellType();
                 Color currentColor = CellColors.getCellColor(type);
-                if(isEnabled || type == Cell.CellType.START_POINT || type == Cell.CellType.END_POINT)
+                if(visualize || type == Cell.CellType.START_POINT || type == Cell.CellType.END_POINT)
                     g2d.setColor(currentColor);
                 else
                     g2d.setColor(CellColors.getCellColor(Cell.CellType.EMPTY));

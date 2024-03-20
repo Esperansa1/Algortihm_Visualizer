@@ -58,25 +58,37 @@ public class Controller {
         }
     }
 
-    public void visualizeSearch() {
-        new Thread(() -> {
-            if (model.getStartCell() == null || model.getEndCell() == null || isBusy) return;
+    public void visualizeSearch(boolean visualize) {
+        if(visualize) {
+            new Thread(() -> {
+                if (model.getStartCell() == null || model.getEndCell() == null || isBusy) return;
 
+                BoardGraph graph = model.getBoardGraph();
+                searchManager.initializeSearch(graph);
+
+                isBusy = true;
+                while (searchManager.isRunning()) {
+                    try {
+                        searchManager.stepSearch();
+                        Thread.sleep(1);
+                    } catch (InterruptedException exception) {
+                        break;
+                    }
+                }
+                view.drawPath(model.getStartCell(), model.getEndCell());
+
+            }).start();
+        }
+        else{
             BoardGraph graph = model.getBoardGraph();
             searchManager.initializeSearch(graph);
 
             isBusy = true;
             while (searchManager.isRunning()) {
-                try {
                     searchManager.stepSearch();
-                    Thread.sleep(1);
-                } catch (InterruptedException exception) {
-                    break;
-                }
             }
             view.drawPath(model.getStartCell(), model.getEndCell());
-
-        }).start();
+        }
     }
 
     public void visualizeMaze() {
@@ -121,14 +133,16 @@ public class Controller {
         return model;
     }
 
-    public void subscribeToModel(BoardObserver observer1, HighlightObserver observer2){
-        model.addObserver(observer1);
-        mazeManager.addObserver(observer1);
-        searchManager.addObserver(observer1);
-
-        mazeManager.addObserver(observer2);
-
+    public void subscribeToBoardModel(BoardObserver observer){
+        model.addObserver(observer);
+        mazeManager.addObserver(observer);
+        searchManager.addObserver(observer);
     }
+
+    public void subscribeToHighlightModel(HighlightObserver observer){
+        mazeManager.addObserver(observer);
+    }
+
 
     public boolean isBusy() {
         return isBusy;
@@ -151,8 +165,6 @@ public class Controller {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Controller controller = new Controller();
-        });
+        SwingUtilities.invokeLater(Controller::new);
     }
 }

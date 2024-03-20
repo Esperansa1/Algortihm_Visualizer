@@ -2,14 +2,12 @@ package Visualizer.Model;
 
 import Visualizer.BoardGraph;
 import Visualizer.BoardObserver;
-import Visualizer.Cell;
-import Visualizer.Observable;
 import Visualizer.Model.SearchAlgortihms.AStar.AStar;
-
 import Visualizer.Model.SearchAlgortihms.GreedyBFS;
 import Visualizer.Model.SearchAlgortihms.Pledge;
 import Visualizer.Model.SearchAlgortihms.SearchAlgorithm;
 import Visualizer.Model.SearchAlgortihms.Tremaux;
+import Visualizer.Observable;
 
 import java.util.ArrayList;
 
