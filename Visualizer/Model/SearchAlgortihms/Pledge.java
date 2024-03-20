@@ -12,6 +12,7 @@ public class Pledge extends SearchAlgorithm {
     private BoardGraph graph;
     private Cell currentCell;
     private int currentDirection;
+    private int stepsCounter;
 
     public void initializeSearch(BoardGraph graph) {
         super.initializeSearch(graph);
@@ -23,6 +24,9 @@ public class Pledge extends SearchAlgorithm {
         super.resetAlgorithm();
         currentDirection = RIGHT;
         currentCell = startCell;
+        stepsCounter = 0;
+
+
 
     }
 
@@ -40,7 +44,7 @@ public class Pledge extends SearchAlgorithm {
 
     @Override
     public void stepSearch() {
-        if (isGoal(endCell, currentCell)) {
+        if (isGoal(endCell, currentCell) || stepsCounter >= graph.getMatrix().length *  graph.getMatrix().length * 1.5) {
             isRunning = false;
             return;
         }

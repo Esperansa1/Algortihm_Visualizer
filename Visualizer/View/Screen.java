@@ -20,8 +20,8 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
     private final Controller controller;
 
     private Cell highlight;
-    JLabel stateLabel;
-
+    private JLabel stateLabel;
+    private boolean isEnabled;
 
     public Screen(Controller controller) {
         super("Algorithm Visualizer");
@@ -170,6 +170,16 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
 
         JButton colorPickerBtn = getButton("Color picker", HEIGHT - 150, padding);
 
+        JCheckBox checkbox = new JCheckBox("Turn on/off cell colors", true);
+        int checkboxAlignment = GRID_WIDTH + (WIDTH - GRID_WIDTH - 165 + padding) / 2;
+
+        checkbox.setBounds(checkboxAlignment, 470, 165, 40);
+        checkbox.addChangeListener(e -> {
+            if(checkbox.isSelected() != isEnabled) {
+                isEnabled = checkbox.isSelected();
+                drawingPanel.repaint();
+            }
+        });
 
         userManualBtn.addActionListener(e -> userManual());
 
@@ -199,8 +209,8 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
 
         getContentPane().add(mazeLabel);
         getContentPane().add(nextMazeBtn);
+        getContentPane().add(checkbox);
         getContentPane().add(stateLabel);
-
 
         getContentPane().add(sliderLabel);
         getContentPane().add(slider);
@@ -375,7 +385,7 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
         int y2 = (c2.getRow() + 1) * size - size / 2;
 
         g2d.setColor(CellColors.getCellColor(Cell.CellType.PATH));
-        g2d.setStroke(new BasicStroke(10));
+        g2d.setStroke(new BasicStroke(Cell.CELL_SIZE/4));
         g2d.drawLine(x1, y1, x2, y2);
     }
 
@@ -417,6 +427,7 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
 
 
     private void drawCells(Graphics g, Cell[][] cells){
+
         Graphics2D g2d = (Graphics2D) g;
 
         int size = Cell.CELL_SIZE;
@@ -426,7 +437,14 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                g2d.setColor(CellColors.getCellColor(cells[i][j]));
+
+                Cell.CellType type = cells[i][j].getCellType();
+                Color currentColor = CellColors.getCellColor(type);
+                if(isEnabled || type == Cell.CellType.START_POINT || type == Cell.CellType.END_POINT)
+                    g2d.setColor(currentColor);
+                else
+                    g2d.setColor(CellColors.getCellColor(Cell.CellType.EMPTY));
+
                 g2d.fillRect(j * size, i * size, size, size);
             }
         }
@@ -464,8 +482,6 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
         Color chosenColor = JColorChooser.showDialog(null, "Pick a color", CellColors.getCellColor(typeToChange));
         CellColors.changeColor(typeToChange, chosenColor);
         drawingPanel.repaint();
-
-
     }
 
     @Override
