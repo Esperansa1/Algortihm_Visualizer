@@ -248,7 +248,7 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
                 "<p style='margin-bottom: 10px;'><b>2. Selecting a Pathfinding Algorithm:</b> Click \"Change Pathfinding Algorithm\"<br/>Choose from A*, GreedyBFS, Pledge's Algorithm, Tremaux's Algorithm.</p><br/>" +
                 "<b>Maze Generation Instructions:</b><br/>" +
                 "1. <b>Generating a Maze:</b> to generate a maze, click on the \"Start Maze Generation\" button.</p>" +
-                "<p style='margin-bottom: 10px;'><b>2. Selecting a Maze Generation Algorithm:</b> Press \"Change Maze Generation Algorithm\"<br/>Choose from Prim's Algorithm, Self-Avoiding Walk.</p><br/>" +
+                "<p style='margin-bottom: 10px;'><b>2. Selecting a Maze Generation Algorithm:</b> Press \"Change Maze Generation Algorithm\"<br/>Choose from Prime's Algorithm, Self-Avoiding Walk.</p><br/>" +
                 "Thank you for using the application!</div></html>"
         );
 
@@ -398,7 +398,7 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
         int y2 = (c2.getRow() + 1) * size - size / 2;
 
         g2d.setColor(CellColors.getCellColor(Cell.CellType.PATH));
-        g2d.setStroke(new BasicStroke(Cell.CELL_SIZE/4));
+        g2d.setStroke(new BasicStroke( Cell.CELL_SIZE /4));
         g2d.drawLine(x1, y1, x2, y2);
     }
 
@@ -420,7 +420,7 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
                 current = current.getCameFrom();
             }
 
-            // I use the stack to make it so I will create the path starting from the start cell
+            // I use the stack to make it, so I will create the path starting from the start cell
             path.push(startCell);
             Cell previous = startCell;
 
