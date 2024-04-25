@@ -156,11 +156,36 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
         JButton startSearchBtn = getButton("Start Pathfinding", 50, padding);
         JButton startMazeBtn = getButton("Generate Maze", 100, padding);
 
-        JLabel pathfindingLabel = getLabel(controller.getCurrentPathfindingAlgorithmName(), 150, padding);
-        JButton nextSearchBtn = getButton("Change Pathfinding", 180, padding);
+        String[] availablePathfindingAlgorithms = controller.getAvailablePathfindingAlgorithms();
 
-        JLabel mazeLabel = getLabel(controller.getCurrentMazeAlgorithmName(), 220, padding);
-        JButton nextMazeBtn = getButton("Change Maze", 250, padding);
+        JComboBox<String> pathfindingDropdown = new JComboBox<>(availablePathfindingAlgorithms);
+        pathfindingDropdown.addActionListener(e -> {
+            if(controller.isBusy()){
+                pathfindingDropdown.setSelectedIndex(controller.getCurrentSearchAlgorithmIndex());
+            }else {
+                String selectedItem = (String) pathfindingDropdown.getSelectedItem();
+                controller.sendSelectedPathfindingAlgorithm(selectedItem);
+                System.out.println("Selected item: " + selectedItem);
+            }
+        });
+        int buttonWidth = 150;
+        int buttonAlignment = GRID_WIDTH + (WIDTH - GRID_WIDTH - buttonWidth + padding)/2;
+        pathfindingDropdown.setBounds(buttonAlignment, 160, buttonWidth, 40);
+
+
+        String[] availableMazeAlgorithms = controller.getAvailableMazeAlgorithms();
+
+        JComboBox<String> mazeDropdown = new JComboBox<>(availableMazeAlgorithms);
+        mazeDropdown.addActionListener(e -> {
+            if(controller.isBusy()){
+                mazeDropdown.setSelectedIndex(controller.getCurrentMazeAlgorithmIndex());
+            }else {
+                String selectedItem = (String) mazeDropdown.getSelectedItem();
+                controller.sendSelectedMazeAlgorithm(selectedItem);
+                System.out.println("Selected item: " + selectedItem);
+            }
+        });
+        mazeDropdown.setBounds(buttonAlignment, 220, buttonWidth, 40);
 
         JLabel sliderLabel = getLabel("Cell size:", 310, padding);
         JSlider slider = getSlider(padding);
@@ -182,15 +207,6 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
         startSearchBtn.addActionListener(e -> controller.visualizeSearch(visualize));
 
         startMazeBtn.addActionListener(e -> controller.visualizeMaze());
-        nextSearchBtn.addActionListener(e -> {
-            controller.nextPathfindingAlgorithm();
-            pathfindingLabel.setText(controller.getCurrentPathfindingAlgorithmName());
-        });
-
-        nextMazeBtn.addActionListener(e -> {
-            controller.nextMazeAlgorithm();
-            mazeLabel.setText(controller.getCurrentMazeAlgorithmName());
-        });
 
         // Add components to the content pane
         getContentPane().add(drawingPanel);
@@ -198,11 +214,11 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
         getContentPane().add(startSearchBtn);
         getContentPane().add(startMazeBtn);
 
-        getContentPane().add(pathfindingLabel);
-        getContentPane().add(nextSearchBtn);
+        getContentPane().add(pathfindingDropdown);
+//        getContentPane().add(nextSearchBtn);
 
-        getContentPane().add(mazeLabel);
-        getContentPane().add(nextMazeBtn);
+        getContentPane().add(mazeDropdown);
+//        getContentPane().add(nextMazeBtn);
         getContentPane().add(checkbox);
         getContentPane().add(stateLabel);
 

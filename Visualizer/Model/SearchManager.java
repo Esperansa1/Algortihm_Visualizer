@@ -45,17 +45,36 @@ public class SearchManager extends Observable<BoardObserver> {
         getCurrentAlgorithm().initializeSearch(graph);
     }
 
-    public void nextAlgorithm(){
-        getCurrentAlgorithm().resetAlgorithm();
-        currentAlgorithmIndex++;
-        currentAlgorithmIndex %= searchAlgorithm.size();
-        getCurrentAlgorithm().resetAlgorithm();
-    }
 
     @Override
     public void notifyObservers() {
         for(BoardObserver observer : getObservers()){
             observer.onBoardChanged();
         }
+    }
+
+    public String[] getAvailablePathfindingAlgorithms() {
+        String[] names = new String[searchAlgorithm.size()];
+        for (int i = 0; i < names.length; i++) {
+            names[i] = searchAlgorithm.get(i).toString();
+        }
+        return names;
+    }
+
+    public void chooseAlgorithmByIndex(String selected) {
+        getCurrentAlgorithm().resetAlgorithm();
+
+        currentAlgorithmIndex = searchAlgorithm.indexOf(searchAlgorithm.stream()
+                .filter(algorithm -> algorithm.toString().equals(selected))
+                .findFirst()
+                .orElse(null));
+
+        getCurrentAlgorithm().resetAlgorithm();
+        System.out.println(getCurrentAlgorithm() + " is selected");
+
+    }
+
+    public int getCurrentAlgorithmIndex() {
+        return currentAlgorithmIndex;
     }
 }

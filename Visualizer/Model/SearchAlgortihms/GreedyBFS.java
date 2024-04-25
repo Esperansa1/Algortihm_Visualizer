@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class GreedyBFS extends SearchAlgorithm {
 
-    public static final String NAME = "A Star (A*)";
+    public static final String NAME = "GreedyBFS";
     private Map<Cell, Double> cellMap;
     private BoardGraph graph;
 

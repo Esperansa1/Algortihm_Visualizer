@@ -12,7 +12,7 @@ public class CellColors {
 
     static {
         cellColorMap.put(Cell.CellType.EMPTY, Color.WHITE);
-        cellColorMap.put(Cell.CellType.WALL, Color.GRAY);
+        cellColorMap.put(Cell.CellType.WALL, Color.BLACK);
         cellColorMap.put(Cell.CellType.PATH, Color.MAGENTA);
         cellColorMap.put(Cell.CellType.OPEN_SET, Color.GREEN);
         cellColorMap.put(Cell.CellType.CLOSE_SET, Color.RED);

@@ -121,14 +121,6 @@ public class Controller {
         return mazeManager.getCurrentAlgorithmName();
     }
 
-    public void nextPathfindingAlgorithm() {
-        searchManager.nextAlgorithm();
-    }
-
-    public void nextMazeAlgorithm() {
-        mazeManager.nextAlgorithm();
-    }
-
     public static BoardModel getInstance(){
         return model;
     }
@@ -166,5 +158,29 @@ public class Controller {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Controller::new);
+    }
+
+    public String[] getAvailablePathfindingAlgorithms() {
+        return searchManager.getAvailablePathfindingAlgorithms();
+    }
+
+    public void sendSelectedPathfindingAlgorithm(String selected) {
+        searchManager.chooseAlgorithmByIndex(selected);
+    }
+
+    public String[] getAvailableMazeAlgorithms() {
+        return mazeManager.getAvailablePathfindingAlgorithms();
+    }
+
+    public void sendSelectedMazeAlgorithm(String selectedItem) {
+        mazeManager.chooseAlgorithmByIndex(selectedItem);
+    }
+
+    public int getCurrentSearchAlgorithmIndex() {
+        return searchManager.getCurrentAlgorithmIndex();
+    }
+
+    public int getCurrentMazeAlgorithmIndex() {
+        return mazeManager.getCurrentAlgorithmIndex();
     }
 }

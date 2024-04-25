@@ -40,11 +40,6 @@ public class MazeManager extends Observable<BoardObserver> {
         return getCurrentAlgorithm().toString();
     }
 
-    public void nextAlgorithm(){
-        currentAlgorithmIndex++;
-        currentAlgorithmIndex %= mazeAlgorithm.size();
-    }
-
     @Override
     public void notifyObservers() {
         for(BoardObserver observer : getObservers()){
@@ -54,8 +49,28 @@ public class MazeManager extends Observable<BoardObserver> {
         for(HighlightObserver observer : observers){
             observer.onMazeHighlight(currentAlgorithm.getCurrent());
         }
-//        currentAlgorithm.resetHighlight();
     }
+
+    public String[] getAvailablePathfindingAlgorithms() {
+        String[] names = new String[mazeAlgorithm.size()];
+        for (int i = 0; i < names.length; i++) {
+            names[i] = mazeAlgorithm.get(i).toString();
+        }
+        return names;
+    }
+
+    public void chooseAlgorithmByIndex(String selected) {
+
+        currentAlgorithmIndex = mazeAlgorithm.indexOf(mazeAlgorithm.stream()
+                .filter(algorithm -> algorithm.toString().equals(selected))
+                .findFirst()
+                .orElse(null));
+
+        System.out.println(getCurrentAlgorithm() + " is selected");
+
+    }
+
+
 
     // Maze Observers
     private final List<HighlightObserver> observers = new ArrayList<>();
@@ -68,4 +83,7 @@ public class MazeManager extends Observable<BoardObserver> {
     }
 
 
+    public int getCurrentAlgorithmIndex() {
+        return currentAlgorithmIndex;
+    }
 }
