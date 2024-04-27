@@ -66,8 +66,6 @@ public class MazeManager extends Observable<BoardObserver> {
                 .findFirst()
                 .orElse(null));
 
-        System.out.println(getCurrentAlgorithm() + " is selected");
-
     }
 
 

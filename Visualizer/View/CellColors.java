@@ -1,7 +1,6 @@
 package Visualizer.View;
 
 import Visualizer.Cell;
-
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +18,6 @@ public class CellColors {
         cellColorMap.put(Cell.CellType.END_POINT, Color.YELLOW);
         cellColorMap.put(Cell.CellType.START_POINT, Color.YELLOW);
         cellColorMap.put(Cell.CellType.HIGHLIGHT, Color.PINK);
-
     }
 
     public static Color getCellColor(Cell cell) {

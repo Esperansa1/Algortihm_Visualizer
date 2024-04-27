@@ -294,9 +294,9 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
         for(int i = 0; i < types.length; i++){
 
             // Formatting the string for first letter to be capitalized and rest not
-            String[] splitString = types[i].toString().split("_");
-            String type = String.join(" ", splitString);
-            String finalType = type.substring(0,1).toUpperCase() + type.substring(1);
+                String[] splitString = types[i].toString().split("_");
+                String type = String.join(" ", splitString);
+                String finalType = type.substring(0,1).toUpperCase() + type.substring(1);
 
             JButton button = getButton(finalType, i * 50, 60);
 

@@ -12,11 +12,15 @@ public class Pledge extends SearchAlgorithm {
     private BoardGraph graph;
     private Cell currentCell;
     private int currentDirection;
-    private int stepsCounter;
+
+    private int[][] stepsCounter;
 
     public void initializeSearch(BoardGraph graph) {
         super.initializeSearch(graph);
         this.graph = graph;
+
+        // Used to find loops
+        stepsCounter = new int[graph.getMatrix().length][graph.getMatrix()[0].length];
     }
 
     @Override
@@ -24,10 +28,6 @@ public class Pledge extends SearchAlgorithm {
         super.resetAlgorithm();
         currentDirection = RIGHT;
         currentCell = startCell;
-        stepsCounter = 0;
-
-
-
     }
 
     private void moveForward() {
@@ -44,17 +44,19 @@ public class Pledge extends SearchAlgorithm {
 
     @Override
     public void stepSearch() {
-        if (isGoal(endCell, currentCell) || stepsCounter >= graph.getMatrix().length *  graph.getMatrix().length * 1.5) {
+        if (isGoal(endCell, currentCell)) {
             isRunning = false;
             return;
         }
 
         Cell[][] cells = graph.getMatrix();
-        if (closedSet.size() == cells.length * cells[0].length) {
+        if (closedSet.size() == cells.length * cells[0].length || stepsCounter[currentCell.getRow()][currentCell.getCol()] >= 5) {
             // All reachable cells have been explored, but the goal was not found
             isRunning = false;
             return;
         }
+
+        stepsCounter[currentCell.getRow()][currentCell.getCol()]++;
 
         if (isRightClear()) {
             turnRight();

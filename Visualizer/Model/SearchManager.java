@@ -70,7 +70,6 @@ public class SearchManager extends Observable<BoardObserver> {
                 .orElse(null));
 
         getCurrentAlgorithm().resetAlgorithm();
-        System.out.println(getCurrentAlgorithm() + " is selected");
 
     }
 
