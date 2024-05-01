@@ -165,7 +165,6 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
             }else {
                 String selectedItem = (String) pathfindingDropdown.getSelectedItem();
                 controller.sendSelectedPathfindingAlgorithm(selectedItem);
-                System.out.println("Selected item: " + selectedItem);
             }
         });
         int buttonWidth = 150;
@@ -182,7 +181,6 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
             }else {
                 String selectedItem = (String) mazeDropdown.getSelectedItem();
                 controller.sendSelectedMazeAlgorithm(selectedItem);
-                System.out.println("Selected item: " + selectedItem);
             }
         });
         mazeDropdown.setBounds(buttonAlignment, 220, buttonWidth, 40);
@@ -414,7 +412,7 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
         int y2 = (c2.getRow() + 1) * size - size / 2;
 
         g2d.setColor(CellColors.getCellColor(Cell.CellType.PATH));
-        g2d.setStroke(new BasicStroke( Cell.CELL_SIZE /4));
+        g2d.setStroke(new BasicStroke( Cell.CELL_SIZE/4));
         g2d.drawLine(x1, y1, x2, y2);
     }
 
@@ -450,6 +448,7 @@ public class Screen extends JFrame implements BoardObserver, HighlightObserver {
                     throw new RuntimeException(e);
                 }
             }
+
             controller.setBusy(false);
         }).start();
     }

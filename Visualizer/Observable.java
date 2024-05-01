@@ -1,5 +1,7 @@
 package Visualizer;
 
+import jdk.jshell.spi.ExecutionControl;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +19,8 @@ public class Observable<T> {
         return observers;
     }
 
-    public void notifyObservers(){
-
+    public void notifyObservers() throws ExecutionControl.NotImplementedException {
+        throw new ExecutionControl.NotImplementedException("Subclasses must implement notifyObservers()");
     }
 
 }
